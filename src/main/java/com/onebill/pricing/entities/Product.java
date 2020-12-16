@@ -24,7 +24,7 @@ public class Product {
 	@OneToMany(mappedBy = "product")
 	private List<ExtraPrice> extraPrices;
 	
-	@OneToOne
+	@OneToOne(mappedBy = "products")
 	private ProductPrice price;
 	
 	

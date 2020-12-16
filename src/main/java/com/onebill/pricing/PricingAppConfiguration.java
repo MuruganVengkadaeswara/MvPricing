@@ -17,7 +17,7 @@ public class PricingAppConfiguration {
 	@Bean
 	public LocalEntityManagerFactoryBean getEmf() {
 		LocalEntityManagerFactoryBean bean = new LocalEntityManagerFactoryBean();
-		bean.setPersistenceUnitName("CRM");
+		bean.setPersistenceUnitName("priceManagement");
 		return bean;
 	}
 
