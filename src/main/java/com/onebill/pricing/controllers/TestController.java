@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dao.ServiceDao;
 import com.onebill.pricing.dto.ResponseDto;
+import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.Service;
+import com.onebill.pricing.services.ProductService;
 
 @RestController
 @RequestMapping("/services")
@@ -21,11 +23,14 @@ public class TestController {
 	@Autowired
 	ServiceDao dao;
 
+	@Autowired
+	ProductService prodservice;
+
 	@PostMapping
-	public ResponseDto addService(@RequestBody Service service) {
+	public ResponseDto addService(@RequestBody ServiceDto service) {
 
 		ResponseDto dto = new ResponseDto();
-		Service serv = dao.addService(service);
+		ServiceDto serv = prodservice.addService(service);
 		if (serv != null) {
 			dto.setResponse(serv);
 		} else {

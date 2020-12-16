@@ -1,5 +1,6 @@
 package com.onebill.pricing;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,11 @@ public class PricingAppConfiguration {
 		JpaTransactionManager mgrBean = new JpaTransactionManager();
 		mgrBean.setEntityManagerFactory(getEmf().getObject());
 		return mgrBean;
+	}
+
+	@Bean
+	public ModelMapper getModelMapper() {
+		return new ModelMapper();
 	}
 
 }
