@@ -4,7 +4,7 @@ import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ServiceDto;
 
-public interface ProductService {
+public interface PriceService {
 
 	// service crud
 
@@ -29,4 +29,8 @@ public interface ProductService {
 	// product Service crud
 
 	ProductServiceDto addProductService(ProductServiceDto dto);
+
+	ProductServiceDto updateProductService(ProductServiceDto dto);
+
+	ProductServiceDto getProductService(int psId);
 }

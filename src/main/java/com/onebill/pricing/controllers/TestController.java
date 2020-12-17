@@ -14,7 +14,7 @@ import com.onebill.pricing.dao.ServiceDao;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.Service;
-import com.onebill.pricing.services.ProductService;
+import com.onebill.pricing.services.PriceService;
 
 @RestController
 @RequestMapping("/services")
@@ -24,13 +24,13 @@ public class TestController {
 	ServiceDao dao;
 
 	@Autowired
-	ProductService prodservice;
+	PriceService priceservice;
 
 	@PostMapping
 	public ResponseDto addService(@RequestBody ServiceDto service) {
 
 		ResponseDto dto = new ResponseDto();
-		ServiceDto serv = prodservice.addService(service);
+		ServiceDto serv = priceservice.addService(service);
 		if (serv != null) {
 			dto.setResponse(serv);
 		} else {

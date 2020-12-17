@@ -10,7 +10,7 @@ import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.Service;
 
 @org.springframework.stereotype.Service
-public class ProductServiceImpl implements ProductService {
+public class PriceServiceImpl implements PriceService {
 
 	@Autowired
 	private ServiceDao servicedao;
@@ -23,7 +23,6 @@ public class ProductServiceImpl implements ProductService {
 		Service service = mapper.map(dto, Service.class);
 		servicedao.addService(service);
 		if (service != null) {
-			System.out.println("MAP WORKING");
 			return mapper.map(service, ServiceDto.class);
 		} else {
 			return null;
@@ -67,6 +66,18 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductServiceDto addProductService(ProductServiceDto dto) {
+		return null;
+	}
+
+	@Override
+	public ProductServiceDto updateProductService(ProductServiceDto dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ProductServiceDto getProductService(int psId) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
