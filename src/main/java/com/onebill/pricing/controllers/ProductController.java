@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dto.ExtraPriceDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.dto.ServiceDto;
@@ -145,7 +146,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("{id}/services")
+	@GetMapping("/{id}/services")
 	public ResponseDto getAllServicesOfProduct(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		List<ServiceDto> list = service.getAllServicesofProduct(id);
@@ -218,10 +219,49 @@ public class ProductController {
 		ResponseDto resp = new ResponseDto();
 		List<ExtraPriceDto> list = service.getExtraPriceByProductId(id);
 		if (!list.isEmpty()) {
-			resp.setResponse(resp);
+			resp.setResponse(list);
 		} else {
 			resp.setError(true);
 			resp.setResponse("unable to fetch all extra prices");
+		}
+		return resp;
+	}
+
+	@PostMapping("/price")
+	public ResponseDto addProductPrice(@RequestBody ProductPriceDto dto) {
+		ResponseDto resp = new ResponseDto();
+		ProductPriceDto price = service.addProductPrice(dto);
+		if (price != null) {
+			resp.setResponse(price);
+		} else {
+			resp.setError(true);
+			resp.setResponse("unable to add price");
+		}
+		return resp;
+	}
+
+	@PutMapping("/price")
+	public ResponseDto updateProductPrice(@RequestBody ProductPriceDto dto) {
+		ResponseDto resp = new ResponseDto();
+		ProductPriceDto price = service.updateProductPrice(dto);
+		if (price != null) {
+			resp.setResponse(price);
+		} else {
+			resp.setError(true);
+			resp.setResponse("unable to update price");
+		}
+		return resp;
+	}
+
+	@GetMapping("/{id}/price")
+	public ResponseDto getProductPrice(@PathVariable int id) {
+		ResponseDto resp = new ResponseDto();
+		ProductPriceDto price = service.getProuctPriceById(id);
+		if (price != null) {
+			resp.setResponse(price);
+		} else {
+			resp.setError(true);
+			resp.setResponse("unable to get price");
 		}
 		return resp;
 	}

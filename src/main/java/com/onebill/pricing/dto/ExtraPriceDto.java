@@ -13,4 +13,6 @@ public class ExtraPriceDto {
 
 	private ProductDto product;
 
+	private int productId;
+
 }

@@ -8,10 +8,12 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.onebill.pricing.entities.ProductPrice;
 
+@Repository
 public class ProductPriceDaoImpl implements ProductPriceDao {
 
 	@PersistenceContext
@@ -37,18 +39,24 @@ public class ProductPriceDaoImpl implements ProductPriceDao {
 	}
 
 	@Override
-	public ProductPrice getProductPrice(int productId) {
+	public ProductPrice getProductPriceById(int productId) {
 		TypedQuery<ProductPrice> query = manager.createQuery("FROM ProductPrice where prodPriceId= :id",
 				ProductPrice.class);
 		query.setParameter("id", productId);
 		List<ProductPrice> list = query.getResultList();
 		if (!list.isEmpty()) {
+		
 			return list.get(0);
 
 		} else {
 			return null;
 		}
 
+	}
+
+	@Override
+	public ProductPrice getProductPrice(int productPriceId) {
+		return manager.find(ProductPrice.class, productPriceId);
 	}
 
 }

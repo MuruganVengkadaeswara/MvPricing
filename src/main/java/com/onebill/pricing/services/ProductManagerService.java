@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.onebill.pricing.dto.ExtraPriceDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.ExtraPrice;
@@ -35,7 +36,17 @@ public interface ProductManagerService {
 
 	List<ServiceDto> getAllServicesofProduct(int productId);
 
-	List<Product> getAllProductsOfService(int serviceId);
+	List<ProductDto> getAllProductsOfService(int serviceId);
+
+	// price
+
+	ProductPriceDto addProductPrice(ProductPriceDto dto);
+
+	ProductPriceDto updateProductPrice(ProductPriceDto dto);
+
+	ProductPriceDto getProuctPriceById(int productId);
+
+	ProductPriceDto getProductPrice(int productPriceId);
 
 	// Extra Price ops
 

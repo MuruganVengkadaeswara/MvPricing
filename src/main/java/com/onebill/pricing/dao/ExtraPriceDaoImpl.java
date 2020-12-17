@@ -8,9 +8,11 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.ExtraPrice;
 
+@Repository
 public class ExtraPriceDaoImpl implements ExtraPriceDao {
 
 	@PersistenceContext
@@ -55,7 +57,8 @@ public class ExtraPriceDaoImpl implements ExtraPriceDao {
 	@Override
 	public List<ExtraPrice> getExtraPriceByProductId(int prodId) {
 
-		TypedQuery<ExtraPrice> query = manager.createQuery("FROM ExtraPrice where productId= : id", ExtraPrice.class);
+		TypedQuery<ExtraPrice> query = manager.createQuery("FROM ExtraPrice where productId= :id", ExtraPrice.class);
+		query.setParameter("id", prodId);
 		List<ExtraPrice> list = query.getResultList();
 		if (!list.isEmpty()) {
 			return list;

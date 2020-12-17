@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,8 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 
 	@PersistenceContext
 	EntityManager manager;
+
+	Logger logger = Logger.getLogger(ProductServiceDaoImpl.class);
 
 	@Override
 	@Transactional
@@ -64,12 +67,15 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 				Integer.class);
 		query.setParameter("id", prodId);
 		List<Integer> idList = query.getResultList();
+		logger.info(idList);
 		TypedQuery<Service> query1 = manager.createQuery("FROM Service where serviceId= :id", Service.class);
 		List<Service> services = new ArrayList<>();
-		for (Integer e : idList) {
+		for (int e : idList) {
 			query1.setParameter("id", e);
 			services.add(query1.getResultList().get(0));
+			logger.info(services);
 		}
+		logger.info(services);
 		return services;
 	}
 

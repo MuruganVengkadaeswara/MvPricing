@@ -11,8 +11,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.ForeignKey;
-
 import lombok.Data;
 
 @Entity
@@ -30,7 +28,10 @@ public class ProductPrice {
 	private double price;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_id", referencedColumnName = "product_id")
+	@JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
 	private Product product;
+
+	@Column(name = "product_id")
+	private int productId;
 
 }

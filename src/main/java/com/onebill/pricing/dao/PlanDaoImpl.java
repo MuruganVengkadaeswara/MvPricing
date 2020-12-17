@@ -5,9 +5,11 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Plan;
 
+@Repository
 public class PlanDaoImpl implements PlanDao {
 
 	@PersistenceContext

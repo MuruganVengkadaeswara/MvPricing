@@ -8,6 +8,8 @@ public interface ProductPriceDao {
 
 	ProductPrice updateProductPrice(ProductPrice price);
 
-	ProductPrice getProductPrice(int productId);
+	ProductPrice getProductPriceById(int productId);
+	
+	ProductPrice getProductPrice(int productPriceId);
 
 }

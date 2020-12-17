@@ -27,6 +27,7 @@ public class ProductService {
 	private Product product;
 
 	@Column(name = "product_id")
+	@NotNull
 	private int productId;
 
 	@ManyToOne
@@ -34,6 +35,7 @@ public class ProductService {
 	private Service service;
 
 	@Column(name = "service_id")
+	@NotNull
 	private int serviceId;
 
 	@NotNull

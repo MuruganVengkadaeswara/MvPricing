@@ -10,13 +10,16 @@ import org.springframework.stereotype.Service;
 
 import com.onebill.pricing.dao.ExtraPriceDao;
 import com.onebill.pricing.dao.ProductDao;
+import com.onebill.pricing.dao.ProductPriceDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.ExtraPriceDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.ExtraPrice;
 import com.onebill.pricing.entities.Product;
+import com.onebill.pricing.entities.ProductPrice;
 import com.onebill.pricing.entities.ProductService;
 
 @Service
@@ -27,6 +30,9 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Autowired
 	ProductServiceDao prodServDao;
+
+	@Autowired
+	ProductPriceDao priceDao;
 
 	@Autowired
 	ExtraPriceDao expDao;
@@ -147,18 +153,26 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Override
 	public List<ServiceDto> getAllServicesofProduct(int productId) {
-		return null;
+		List<com.onebill.pricing.entities.Service> list = prodServDao.getAllServicesOfProduct(productId);
+		logger.info(list);
+		List<ServiceDto> dtolist = new ArrayList<ServiceDto>();
+		if (!list.isEmpty()) {
+			for (com.onebill.pricing.entities.Service s : list) {
+				dtolist.add(mapper.map(s, ServiceDto.class));
+			}
+		}
+		return dtolist;
 	}
 
 	@Override
-	public List<Product> getAllProductsOfService(int serviceId) {
+	public List<ProductDto> getAllProductsOfService(int serviceId) {
 		return null;
 	}
 
 	@Override
 	public ExtraPriceDto addExtraPrice(ExtraPriceDto dto) {
 		ExtraPrice price = mapper.map(dto, ExtraPrice.class);
-		expDao.addExtraPrice(price);
+		price = expDao.addExtraPrice(price);
 		if (price != null) {
 			logger.info("Added extra price" + price);
 			return mapper.map(dto, ExtraPriceDto.class);
@@ -212,6 +226,50 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			return mapper.map(exp, ExtraPriceDto.class);
 		} else {
 
+			return null;
+		}
+	}
+
+	@Override
+	public ProductPriceDto addProductPrice(ProductPriceDto dto) {
+		ProductPrice price = mapper.map(dto, ProductPrice.class);
+		priceDao.addProductPrice(price);
+		if (price != null) {
+			return mapper.map(price, ProductPriceDto.class);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public ProductPriceDto updateProductPrice(ProductPriceDto dto) {
+		ProductPrice price = mapper.map(dto, ProductPrice.class);
+		priceDao.updateProductPrice(price);
+		if (price != null) {
+			return mapper.map(price, ProductPriceDto.class);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public ProductPriceDto getProuctPriceById(int productId) {
+		ProductPrice price = priceDao.getProductPriceById(productId);
+		logger.info(price);
+		if (price != null) {
+			return mapper.map(price, ProductPriceDto.class);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public ProductPriceDto getProductPrice(int productPriceId) {
+		ProductPrice price = priceDao.getProductPrice(productPriceId);
+		if (price != null) {
+			return mapper.map(price, ProductPriceDto.class);
+		}
+		else {
 			return null;
 		}
 	}
