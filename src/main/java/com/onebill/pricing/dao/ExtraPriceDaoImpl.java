@@ -48,7 +48,7 @@ public class ExtraPriceDaoImpl implements ExtraPriceDao {
 	}
 
 	@Override
-	public ExtraPrice getExtraPrice(int id) {
+	public ExtraPrice getExtraPriceById(int id) {
 		return manager.find(ExtraPrice.class, id);
 	}
 

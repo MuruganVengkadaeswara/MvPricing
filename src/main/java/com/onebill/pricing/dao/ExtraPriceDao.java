@@ -12,7 +12,7 @@ public interface ExtraPriceDao {
 
 	ExtraPrice removeExtraPriceById(int id);
 
-	ExtraPrice getExtraPrice(int id);
+	ExtraPrice getExtraPriceById(int id);
 
 	List<ExtraPrice> getExtraPriceByProductId(int prodId);
 

@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "product_service")
+@Table(name = "product_services")
 public class ProductService {
 
 	@Id
@@ -22,16 +22,21 @@ public class ProductService {
 	@Column(name = "ps_id")
 	private int psId;
 
-	@OneToOne
-	@NotNull
-	@JoinColumn(name = "product_id")
+	@ManyToOne
+	@JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
 	private Product product;
 
-	@OneToOne
-	@NotNull
-	@JoinColumn(name = "service_id")
+	@Column(name = "product_id")
+	private int productId;
+
+	@ManyToOne
+	@JoinColumn(name = "service_id", referencedColumnName = "service_id", insertable = false, updatable = false)
 	private Service service;
 
+	@Column(name = "service_id")
+	private int serviceId;
+
+	@NotNull
 	@Column(name = "service_price")
 	private double servicePrice;
 

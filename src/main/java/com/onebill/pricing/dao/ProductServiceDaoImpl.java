@@ -9,11 +9,13 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.ProductService;
 import com.onebill.pricing.entities.Service;
 
+@Repository
 public class ProductServiceDaoImpl implements ProductServiceDao {
 
 	@PersistenceContext

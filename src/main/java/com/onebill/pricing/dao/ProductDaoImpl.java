@@ -1,13 +1,19 @@
 package com.onebill.pricing.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Product;
 
+
+@Repository
 public class ProductDaoImpl implements ProductDao {
 
 	@PersistenceContext
@@ -48,6 +54,19 @@ public class ProductDaoImpl implements ProductDao {
 	@Override
 	public Product getProduct(int productId) {
 		return manager.find(Product.class, productId);
+	}
+
+	@Override
+	public List<Product> getAllProducts() {
+		List<Product> list;
+		TypedQuery<Product> query = manager.createQuery("FROM Product",Product.class);
+		list = query.getResultList();
+		if(!list.isEmpty()) {
+			return list;
+		}
+		else {
+			return null;
+		}
 	}
 
 }
