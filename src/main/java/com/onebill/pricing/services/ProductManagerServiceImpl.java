@@ -8,12 +8,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.onebill.pricing.dao.ExtraPriceDao;
 import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.ExtraPriceDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ServiceDto;
+import com.onebill.pricing.entities.ExtraPrice;
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.ProductService;
 
@@ -25,6 +27,9 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Autowired
 	ProductServiceDao prodServDao;
+
+	@Autowired
+	ExtraPriceDao expDao;
 
 	@Autowired
 	private ModelMapper mapper;
@@ -120,12 +125,24 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Override
 	public ProductServiceDto getProductService(int psId) {
-		return null;
+		ProductService ps = prodServDao.getProductServiceById(psId);
+		if (ps != null) {
+			logger.info("Found product Service" + ps);
+			return mapper.map(ps, ProductServiceDto.class);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public ProductServiceDto deleteProductServiceById(int psId) {
-		return null;
+		ProductService ps = prodServDao.removeProductServiceById(psId);
+		if (ps != null) {
+			logger.info("Deleted product service" + ps);
+			return mapper.map(ps, ProductServiceDto.class);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -140,27 +157,63 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Override
 	public ExtraPriceDto addExtraPrice(ExtraPriceDto dto) {
-		return null;
+		ExtraPrice price = mapper.map(dto, ExtraPrice.class);
+		expDao.addExtraPrice(price);
+		if (price != null) {
+			logger.info("Added extra price" + price);
+			return mapper.map(dto, ExtraPriceDto.class);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public ExtraPriceDto removeExtraPriceById(int expId) {
-		return null;
+		ExtraPrice price = expDao.removeExtraPriceById(expId);
+		if (price != null) {
+			logger.info("Deleted extra price" + price);
+			return mapper.map(price, ExtraPriceDto.class);
+		} else {
+			return null;
+		}
+
 	}
 
 	@Override
 	public List<ExtraPriceDto> getExtraPriceByProductId(int productId) {
-		return null;
+
+		List<ExtraPrice> list = expDao.getExtraPriceByProductId(productId);
+		List<ExtraPriceDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (ExtraPrice e : list) {
+				dtolist.add(mapper.map(e, ExtraPriceDto.class));
+			}
+		}
+		return dtolist;
 	}
 
 	@Override
 	public ExtraPriceDto getExtraPriceById(int expId) {
-		return null;
+
+		ExtraPrice exp = expDao.getExtraPriceById(expId);
+		if (exp != null) {
+			return mapper.map(exp, ExtraPriceDto.class);
+		} else {
+			return null;
+		}
+
 	}
 
 	@Override
 	public ExtraPriceDto updateExtraPrice(ExtraPriceDto dto) {
-		return null;
+		ExtraPrice exp = mapper.map(dto, ExtraPrice.class);
+		expDao.updateExtraPrice(exp);
+		if (exp != null) {
+			return mapper.map(exp, ExtraPriceDto.class);
+		} else {
+
+			return null;
+		}
 	}
 
 }
