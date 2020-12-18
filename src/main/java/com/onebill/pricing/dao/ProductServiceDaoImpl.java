@@ -45,7 +45,14 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 
 	@Override
 	public ProductService getProductServiceById(int psId) {
-		return manager.find(ProductService.class, psId);
+		ProductService service = manager.find(ProductService.class, psId);
+		if (service != null) {
+
+			return service;
+		} else {
+			return null;
+		}
+
 	}
 
 	@Override
@@ -80,7 +87,41 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 
 	@Override
 	public List<Product> getAllProductbyServiceId(int servId) {
-		return null;
+		TypedQuery<Integer> query = manager.createQuery("select productId from ProductService where serviceId= :id",
+				Integer.class);
+		query.setParameter("id", servId);
+		List<Integer> idList = query.getResultList();
+		logger.info(idList);
+		List<Product> products = new ArrayList<>();
+		for (int e : idList) {
+			TypedQuery<Product> query1 = manager.createQuery("FROM Product where productId= :id", Product.class);
+			query1.setParameter("id", e);
+			products.add(query1.getResultList().get(0));
+		}
+		logger.info(products);
+		return products;
+	}
+
+	@Override
+	public List<ProductService> getAllProductServices() {
+		TypedQuery<ProductService> query = manager.createQuery("FROM ProductService", ProductService.class);
+		return query.getResultList();
+	}
+
+	@Override
+	public List<ProductService> getAllProductServicesByProductId(int prodId) {
+		TypedQuery<ProductService> query = manager.createQuery("FROM ProductService where productId= :id",
+				ProductService.class);
+		query.setParameter("id", prodId);
+		return query.getResultList();
+	}
+
+	@Override
+	public List<ProductService> getAllProductServicesByServiceId(int servId) {
+		TypedQuery<ProductService> query = manager.createQuery("FROM ProductService where serviceId= :id",
+				ProductService.class);
+		query.setParameter("id", servId);
+		return query.getResultList();
 	}
 
 }

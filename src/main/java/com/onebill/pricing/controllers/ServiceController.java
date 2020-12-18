@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.services.ServiceManagerService;
 
 @RestController
-@RequestMapping("/services")
 public class ServiceController {
 
 	@Autowired
 	ServiceManagerService service;
 
-	@GetMapping
+	@GetMapping("/services")
 	public ResponseDto getAllServices() {
 		ResponseDto resp = new ResponseDto();
 		List<ServiceDto> dtolist = service.getAllServices();
@@ -36,7 +36,7 @@ public class ServiceController {
 		return resp;
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/service/{id}")
 	public ResponseDto getService(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto dto = service.getService(id);
@@ -49,7 +49,7 @@ public class ServiceController {
 		return resp;
 	}
 
-	@PostMapping
+	@PostMapping("/service")
 	public ResponseDto addService(@RequestBody ServiceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto serv = service.addService(dto);
@@ -62,7 +62,7 @@ public class ServiceController {
 		return resp;
 	}
 
-	@PutMapping
+	@PutMapping("/service")
 	public ResponseDto updateService(@RequestBody ServiceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto serv = service.updateService(dto);
@@ -75,7 +75,7 @@ public class ServiceController {
 		return resp;
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/service/{id}")
 	public ResponseDto deleteService(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto serv = service.removeService(id);
@@ -86,6 +86,20 @@ public class ServiceController {
 			resp.setResponse("Unable to delete service");
 		}
 		return resp;
+	}
+
+	@GetMapping("/service/{id}/products")
+	public ResponseDto getAllProductsOfService(@PathVariable int id) {
+		ResponseDto resp = new ResponseDto();
+		List<ProductDto> list = service.getAllProductsOfService(id);
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
+		} else {
+			resp.setError(true);
+			resp.setResponse("unable to get all products");
+		}
+		return resp;
+
 	}
 
 }

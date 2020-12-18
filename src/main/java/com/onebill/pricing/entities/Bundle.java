@@ -1,5 +1,6 @@
 package com.onebill.pricing.entities;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,5 +19,9 @@ public class Bundle {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "bundle_id")
 	private int bundleId;
+
+	private String extrasPaid;
+
+	private int validityDays;
 
 }

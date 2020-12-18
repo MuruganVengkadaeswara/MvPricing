@@ -36,5 +36,6 @@ public class PricingAppConfiguration {
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		return mapper;
 	}
+	
 
 }

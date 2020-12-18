@@ -23,5 +23,6 @@ public class Service {
 	@NotNull
 	@Column(name = "service_name")
 	private String serviceName;
+	
 
 }

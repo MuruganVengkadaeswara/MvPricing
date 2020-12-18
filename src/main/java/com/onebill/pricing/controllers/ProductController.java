@@ -21,13 +21,12 @@ import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.services.ProductManagerService;
 
 @RestController
-@RequestMapping("/products")
 public class ProductController {
 
 	@Autowired
 	ProductManagerService service;
 
-	@GetMapping
+	@GetMapping("/products")
 	public ResponseDto getAllProducts() {
 		ResponseDto resp = new ResponseDto();
 		List<ProductDto> list = service.getAllProducts();
@@ -40,7 +39,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@PostMapping
+	@PostMapping("/product")
 	public ResponseDto addProduct(@RequestBody ProductDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto1 = service.addProduct(dto);
@@ -53,7 +52,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/product/{id}")
 	public ResponseDto getProduct(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto = service.getProduct(id);
@@ -66,7 +65,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/product/{id}")
 	public ResponseDto deleteProduct(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto = service.removeProductById(id);
@@ -79,7 +78,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@PutMapping
+	@PutMapping("/product")
 	public ResponseDto updateProduct(@RequestBody ProductDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto1 = service.updateProduct(dto);
@@ -94,7 +93,7 @@ public class ProductController {
 
 	// product services
 
-	@PostMapping("/service")
+	@PostMapping("/product/service")
 	public ResponseDto addProductService(@RequestBody ProductServiceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ProductServiceDto dto1 = service.addProductService(dto);
@@ -107,7 +106,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@PutMapping("/service")
+	@PutMapping("/product/service")
 	public ResponseDto updateProductService(@RequestBody ProductServiceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ProductServiceDto dto1 = service.updateProductService(dto);
@@ -120,7 +119,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@DeleteMapping("/services/{id}")
+	@DeleteMapping("/product/services/{id}")
 	public ResponseDto deleteProductService(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ProductServiceDto dto1 = service.deleteProductServiceById(id);
@@ -133,7 +132,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/services/{id}")
+	@GetMapping("/product/services/{id}")
 	public ResponseDto getProductService(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ProductServiceDto dto1 = service.getProductService(id);
@@ -146,10 +145,25 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/{id}/services")
-	public ResponseDto getAllServicesOfProduct(@PathVariable int id) {
+	
+
+	@GetMapping("/product/{id}/services")
+	public ResponseDto getAllProductServices(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
-		List<ServiceDto> list = service.getAllServicesofProduct(id);
+		List<ProductServiceDto> list = service.getAllProductServiceByProdId(id);
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
+		} else {
+			resp.setError(true);
+			resp.setResponse("unable to fetch all the services");
+		}
+		return resp;
+	}
+
+	@GetMapping("/product/services")
+	public ResponseDto getAllProductServices() {
+		ResponseDto resp = new ResponseDto();
+		List<ProductServiceDto> list = service.getAllProductService();
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
 		} else {
@@ -161,7 +175,7 @@ public class ProductController {
 
 	// extra price
 
-	@PostMapping("/extraprice")
+	@PostMapping("/product/extraprice")
 	public ResponseDto addExtraPrice(@RequestBody ExtraPriceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ExtraPriceDto dto1 = service.addExtraPrice(dto);
@@ -175,7 +189,7 @@ public class ProductController {
 
 	}
 
-	@PutMapping("/extraprice")
+	@PutMapping("/product/extraprice")
 	public ResponseDto updateExtraPrice(@RequestBody ExtraPriceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ExtraPriceDto dto1 = service.updateExtraPrice(dto);
@@ -188,7 +202,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/extraprices/{id}")
+	@GetMapping("/product/extraprices/{id}")
 	public ResponseDto getExtraPrice(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ExtraPriceDto dto1 = service.getExtraPriceById(id);
@@ -201,7 +215,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@DeleteMapping("/extraprices/{id}")
+	@DeleteMapping("/product/extraprices/{id}")
 	public ResponseDto deleteExtraPrice(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ExtraPriceDto dto1 = service.removeExtraPriceById(id);
@@ -214,7 +228,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/{id}/extraprices")
+	@GetMapping("/product/{id}/extraprices")
 	public ResponseDto getAllExtraPrices(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		List<ExtraPriceDto> list = service.getExtraPriceByProductId(id);
@@ -227,7 +241,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@PostMapping("/price")
+	@PostMapping("/product/price")
 	public ResponseDto addProductPrice(@RequestBody ProductPriceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ProductPriceDto price = service.addProductPrice(dto);
@@ -240,7 +254,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@PutMapping("/price")
+	@PutMapping("/product/price")
 	public ResponseDto updateProductPrice(@RequestBody ProductPriceDto dto) {
 		ResponseDto resp = new ResponseDto();
 		ProductPriceDto price = service.updateProductPrice(dto);
@@ -253,7 +267,7 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/{id}/price")
+	@GetMapping("/product/{id}/price")
 	public ResponseDto getProductPrice(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
 		ProductPriceDto price = service.getProuctPriceById(id);

@@ -83,6 +83,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	@Override
 	public ProductDto getProduct(int productId) {
 		Product product = productdao.getProduct(productId);
+		logger.info(product);
 		if (product != null) {
 			return mapper.map(product, ProductDto.class);
 		} else {
@@ -155,7 +156,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	public List<ServiceDto> getAllServicesofProduct(int productId) {
 		List<com.onebill.pricing.entities.Service> list = prodServDao.getAllServicesOfProduct(productId);
 		logger.info(list);
-		List<ServiceDto> dtolist = new ArrayList<ServiceDto>();
+		List<ServiceDto> dtolist = new ArrayList<>();
 		if (!list.isEmpty()) {
 			for (com.onebill.pricing.entities.Service s : list) {
 				dtolist.add(mapper.map(s, ServiceDto.class));
@@ -165,17 +166,12 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public List<ProductDto> getAllProductsOfService(int serviceId) {
-		return null;
-	}
-
-	@Override
 	public ExtraPriceDto addExtraPrice(ExtraPriceDto dto) {
 		ExtraPrice price = mapper.map(dto, ExtraPrice.class);
 		price = expDao.addExtraPrice(price);
 		if (price != null) {
 			logger.info("Added extra price" + price);
-			return mapper.map(dto, ExtraPriceDto.class);
+			return mapper.map(price, ExtraPriceDto.class);
 		} else {
 			return null;
 		}
@@ -268,10 +264,45 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 		ProductPrice price = priceDao.getProductPrice(productPriceId);
 		if (price != null) {
 			return mapper.map(price, ProductPriceDto.class);
-		}
-		else {
+		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public List<ProductServiceDto> getAllProductService() {
+		List<ProductService> list = prodServDao.getAllProductServices();
+		List<ProductServiceDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (ProductService p : list) {
+				dtolist.add(mapper.map(p, ProductServiceDto.class));
+			}
+		}
+		return dtolist;
+	}
+
+	@Override
+	public List<ProductServiceDto> getAllProductServiceByProdId(int prodId) {
+		List<ProductService> list = prodServDao.getAllProductServicesByProductId(prodId);
+		List<ProductServiceDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (ProductService p : list) {
+				dtolist.add(mapper.map(p, ProductServiceDto.class));
+			}
+		}
+		return dtolist;
+	}
+
+	@Override
+	public List<ProductServiceDto> getAllProductServiceByServId(int servId) {
+		List<ProductService> list = prodServDao.getAllProductServicesByServiceId(servId);
+		List<ProductServiceDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (ProductService p : list) {
+				dtolist.add(mapper.map(p, ProductServiceDto.class));
+			}
+		}
+		return dtolist;
 	}
 
 }

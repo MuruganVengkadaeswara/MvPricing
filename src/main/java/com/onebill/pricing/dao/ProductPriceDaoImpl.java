@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.onebill.pricing.entities.ProductPrice;
 
 @Repository
@@ -40,12 +39,11 @@ public class ProductPriceDaoImpl implements ProductPriceDao {
 
 	@Override
 	public ProductPrice getProductPriceById(int productId) {
-		TypedQuery<ProductPrice> query = manager.createQuery("FROM ProductPrice where prodPriceId= :id",
+		TypedQuery<ProductPrice> query = manager.createQuery("FROM ProductPrice where productId= :id",
 				ProductPrice.class);
 		query.setParameter("id", productId);
 		List<ProductPrice> list = query.getResultList();
 		if (!list.isEmpty()) {
-		
 			return list.get(0);
 
 		} else {

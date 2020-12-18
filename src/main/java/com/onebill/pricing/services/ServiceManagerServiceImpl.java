@@ -7,8 +7,11 @@ import org.jboss.logging.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dao.ServiceDao;
+import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ServiceDto;
+import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.Service;
 
 @org.springframework.stereotype.Service
@@ -16,6 +19,9 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 
 	@Autowired
 	private ServiceDao servicedao;
+
+	@Autowired
+	private ProductServiceDao prodServDao;
 
 	@Autowired
 	private ModelMapper mapper;
@@ -76,6 +82,19 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 		if (!list.isEmpty()) {
 			for (Service s : list) {
 				dtolist.add(mapper.map(s, ServiceDto.class));
+			}
+		}
+		return dtolist;
+	}
+
+	@Override
+	public List<ProductDto> getAllProductsOfService(int serviceId) {
+		List<Product> list = prodServDao.getAllProductbyServiceId(serviceId);
+		logger.info(list);
+		List<ProductDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (Product p : list) {
+				dtolist.add(mapper.map(p, ProductDto.class));
 			}
 		}
 		return dtolist;
