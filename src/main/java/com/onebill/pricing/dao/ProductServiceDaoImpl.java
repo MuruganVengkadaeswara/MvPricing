@@ -68,12 +68,11 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 		query.setParameter("id", prodId);
 		List<Integer> idList = query.getResultList();
 		logger.info(idList);
-		TypedQuery<Service> query1 = manager.createQuery("FROM Service where serviceId= :id", Service.class);
 		List<Service> services = new ArrayList<>();
 		for (int e : idList) {
+			TypedQuery<Service> query1 = manager.createQuery("FROM Service where serviceId= :id", Service.class);
 			query1.setParameter("id", e);
 			services.add(query1.getResultList().get(0));
-			logger.info(services);
 		}
 		logger.info(services);
 		return services;
