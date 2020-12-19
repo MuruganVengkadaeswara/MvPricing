@@ -9,14 +9,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.sun.istack.NotNull;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
@@ -35,9 +31,15 @@ public class Product {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = CascadeType.ALL)
 	private List<ExtraPrice> extraPrices;
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private List<Plan> plans;
 
 	@NotNull
-	@OneToOne(mappedBy = "product")
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
 	private ProductPrice price;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private List<ProductService> services;
 
 }

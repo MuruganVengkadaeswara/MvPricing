@@ -20,4 +20,10 @@ public interface ProductServiceDao {
 
 	List<Product> getAllProductbyServiceId(int servId);
 
+	List<ProductService> getAllProductServices();
+
+	List<ProductService> getAllProductServicesByProductId(int prodId);
+
+	List<ProductService> getAllProductServicesByServiceId(int servId);
+
 }

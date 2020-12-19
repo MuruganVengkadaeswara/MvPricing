@@ -1,7 +1,10 @@
 package com.onebill.pricing.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
@@ -48,6 +51,12 @@ public class PlanDaoImpl implements PlanDao {
 	@Override
 	public Plan getPlanById(int planId) {
 		return manager.find(Plan.class, planId);
+	}
+
+	@Override
+	public List<Plan> getAllPlans() {
+		TypedQuery<Plan> query = manager.createQuery("FROM Plan", Plan.class);
+		return query.getResultList();
 	}
 
 }

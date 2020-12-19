@@ -16,10 +16,10 @@
 			<property name="javax.persistence.jdbc.url"
 				value="jdbc:mysql://localhost:3306/price_db" />
 
-			<property name="javax.persistence.jdbc.user" value="mv" />
+			<property name="javax.persistence.jdbc.user" value="onebill" />
 
 			<property name="javax.persistence.jdbc.password"
-				value="Mv@mysql" />
+				value="onebill" />
 
 			<property name="hibernate.show_sql" value="true" />
 

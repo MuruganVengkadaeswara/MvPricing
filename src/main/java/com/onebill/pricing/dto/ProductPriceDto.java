@@ -7,9 +7,10 @@ public class ProductPriceDto {
 
 	private int prodPriceId;
 
-	private double price;
-	
 	private int productId;
 
 	private ProductDto product;
+
+	private double price;
+
 }

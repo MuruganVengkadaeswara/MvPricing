@@ -36,7 +36,11 @@ public interface ProductManagerService {
 
 	List<ServiceDto> getAllServicesofProduct(int productId);
 
-	List<ProductDto> getAllProductsOfService(int serviceId);
+	List<ProductServiceDto> getAllProductService();
+
+	List<ProductServiceDto> getAllProductServiceByProdId(int prodId);
+
+	List<ProductServiceDto> getAllProductServiceByServId(int servId);
 
 	// price
 

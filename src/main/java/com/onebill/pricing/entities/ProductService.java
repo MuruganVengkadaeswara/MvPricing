@@ -8,13 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "product_services")
+@Table(name = "product_services", uniqueConstraints = @UniqueConstraint(columnNames = { "product_id", "service_id" }))
 public class ProductService {
 
 	@Id
