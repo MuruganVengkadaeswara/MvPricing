@@ -2,12 +2,12 @@ package com.onebill.pricing.services;
 
 import java.util.List;
 
-import com.onebill.pricing.dto.ExtraPriceDto;
+import com.onebill.pricing.dto.AdditionalPriceDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ServiceDto;
-import com.onebill.pricing.entities.ExtraPrice;
+import com.onebill.pricing.entities.AdditionalPrice;
 import com.onebill.pricing.entities.Product;
 
 public interface ProductManagerService {
@@ -52,16 +52,16 @@ public interface ProductManagerService {
 
 	ProductPriceDto getProductPrice(int productPriceId);
 
-	// Extra Price ops
+	// Addl Price ops
 
-	ExtraPriceDto addExtraPrice(ExtraPriceDto dto);
+	AdditionalPriceDto addAddlPrice(AdditionalPriceDto dto);
 
-	ExtraPriceDto removeExtraPriceById(int expId);
+	AdditionalPriceDto removeAddlPriceById(int expId);
 
-	List<ExtraPriceDto> getExtraPriceByProductId(int productId);
+	List<AdditionalPriceDto> getAddlPriceByProductId(int productId);
 
-	ExtraPriceDto getExtraPriceById(int expId);
+	AdditionalPriceDto getAddlPriceById(int expId);
 
-	ExtraPriceDto updateExtraPrice(ExtraPriceDto dto);
+	AdditionalPriceDto updateAddlPrice(AdditionalPriceDto dto);
 
 }

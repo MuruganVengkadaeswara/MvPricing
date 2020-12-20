@@ -68,7 +68,11 @@ public class TestServiceManager {
 	}
 	
 	
-	
+	public void addDummyService() {
+		ServiceDto s = new ServiceDto();
+		
+		
+	}
 	
 	
 	

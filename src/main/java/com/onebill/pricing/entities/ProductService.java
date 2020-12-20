@@ -43,8 +43,14 @@ public class ProductService {
 	@NotNull
 	@Column(name = "service_price")
 	private double servicePrice;
+	
+	@Column(name = "unit_type")
+	@NotNull
+	private String unitType;
 
 	@Column(name = "free_units")
 	private long freeUnits;
 
+	
+	
 }

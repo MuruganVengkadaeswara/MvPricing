@@ -12,13 +12,15 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product {
 
 	@Id
@@ -26,20 +28,20 @@ public class Product {
 	@Column(name = "product_id", unique = true)
 	private int productId;
 
-	@Column(name = "product_name")
+	@Column(name = "product_name", unique = true)
 	private String productName;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = CascadeType.ALL)
-	private List<ExtraPrice> extraPrices;
-	
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-	private List<Plan> plans;
+	private List<AdditionalPrice> additionalPrices;
 
-	@NotNull
 	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
 	private ProductPrice price;
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@OneToMany( mappedBy = "product", cascade = CascadeType.ALL)
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<ProductService> services;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private List<BundleProduct> bundlesProducts;
 
 }

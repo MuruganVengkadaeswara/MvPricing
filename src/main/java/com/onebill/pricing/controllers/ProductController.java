@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.onebill.pricing.dto.ExtraPriceDto;
+import com.onebill.pricing.dto.AdditionalPriceDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
@@ -145,8 +145,6 @@ public class ProductController {
 		return resp;
 	}
 
-	
-
 	@GetMapping("/product/{id}/services")
 	public ResponseDto getAllProductServices(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
@@ -175,10 +173,10 @@ public class ProductController {
 
 	// extra price
 
-	@PostMapping("/product/extraprice")
-	public ResponseDto addExtraPrice(@RequestBody ExtraPriceDto dto) {
+	@PostMapping("/product/addlprice")
+	public ResponseDto addExtraPrice(@RequestBody AdditionalPriceDto dto) {
 		ResponseDto resp = new ResponseDto();
-		ExtraPriceDto dto1 = service.addExtraPrice(dto);
+		AdditionalPriceDto dto1 = service.addAddlPrice(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
 		} else {
@@ -189,10 +187,10 @@ public class ProductController {
 
 	}
 
-	@PutMapping("/product/extraprice")
-	public ResponseDto updateExtraPrice(@RequestBody ExtraPriceDto dto) {
+	@PutMapping("/product/addlprice")
+	public ResponseDto updateExtraPrice(@RequestBody AdditionalPriceDto dto) {
 		ResponseDto resp = new ResponseDto();
-		ExtraPriceDto dto1 = service.updateExtraPrice(dto);
+		AdditionalPriceDto dto1 = service.updateAddlPrice(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
 		} else {
@@ -202,10 +200,10 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/product/extraprices/{id}")
+	@GetMapping("/product/addlprices/{id}")
 	public ResponseDto getExtraPrice(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
-		ExtraPriceDto dto1 = service.getExtraPriceById(id);
+		AdditionalPriceDto dto1 = service.getAddlPriceById(id);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
 		} else {
@@ -215,10 +213,10 @@ public class ProductController {
 		return resp;
 	}
 
-	@DeleteMapping("/product/extraprices/{id}")
+	@DeleteMapping("/product/addlprices/{id}")
 	public ResponseDto deleteExtraPrice(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
-		ExtraPriceDto dto1 = service.removeExtraPriceById(id);
+		AdditionalPriceDto dto1 = service.removeAddlPriceById(id);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
 		} else {
@@ -228,10 +226,10 @@ public class ProductController {
 		return resp;
 	}
 
-	@GetMapping("/product/{id}/extraprices")
+	@GetMapping("/product/{id}/addlprices")
 	public ResponseDto getAllExtraPrices(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
-		List<ExtraPriceDto> list = service.getExtraPriceByProductId(id);
+		List<AdditionalPriceDto> list = service.getAddlPriceByProductId(id);
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
 		} else {

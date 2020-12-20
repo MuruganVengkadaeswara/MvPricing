@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "service")
+@Table(name = "services")
 public class Service {
 
 	@Id
@@ -21,8 +21,7 @@ public class Service {
 	private int serviceId;
 
 	@NotNull
-	@Column(name = "service_name")
+	@Column(name = "service_name",unique = true)
 	private String serviceName;
-	
 
 }

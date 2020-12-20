@@ -10,25 +10,25 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
-import com.onebill.pricing.entities.ExtraPrice;
+import com.onebill.pricing.entities.AdditionalPrice;
 
 @Repository
-public class ExtraPriceDaoImpl implements ExtraPriceDao {
+public class AdditionalPriceDaoImpl implements AdditionalPriceDao {
 
 	@PersistenceContext
 	EntityManager manager;
 
 	@Override
 	@Transactional
-	public ExtraPrice addExtraPrice(ExtraPrice price) {
+	public AdditionalPrice addAddlPrice(AdditionalPrice price) {
 		manager.persist(price);
 		return price;
 	}
 
 	@Override
 	@Transactional
-	public ExtraPrice updateExtraPrice(ExtraPrice price) {
-		ExtraPrice price1 = manager.find(ExtraPrice.class, price.getExtraId());
+	public AdditionalPrice updateAddlPrice(AdditionalPrice price) {
+		AdditionalPrice price1 = manager.find(AdditionalPrice.class, price.getAddlPriceId());
 		if (price1 != null) {
 			BeanUtils.copyProperties(price, price1);
 			return price1;
@@ -39,8 +39,8 @@ public class ExtraPriceDaoImpl implements ExtraPriceDao {
 
 	@Override
 	@Transactional
-	public ExtraPrice removeExtraPriceById(int id) {
-		ExtraPrice price = manager.find(ExtraPrice.class, id);
+	public AdditionalPrice removeAddlPriceById(int id) {
+		AdditionalPrice price = manager.find(AdditionalPrice.class, id);
 		if (price != null) {
 			manager.remove(price);
 			return price;
@@ -50,16 +50,16 @@ public class ExtraPriceDaoImpl implements ExtraPriceDao {
 	}
 
 	@Override
-	public ExtraPrice getExtraPriceById(int id) {
-		return manager.find(ExtraPrice.class, id);
+	public AdditionalPrice getAddlPriceById(int id) {
+		return manager.find(AdditionalPrice.class, id);
 	}
 
 	@Override
-	public List<ExtraPrice> getExtraPriceByProductId(int prodId) {
+	public List<AdditionalPrice> getAddlPriceByProductId(int prodId) {
 
-		TypedQuery<ExtraPrice> query = manager.createQuery("FROM ExtraPrice where productId= :id", ExtraPrice.class);
+		TypedQuery<AdditionalPrice> query = manager.createQuery("FROM AdditionalPrice where productId= :id", AdditionalPrice.class);
 		query.setParameter("id", prodId);
-		List<ExtraPrice> list = query.getResultList();
+		List<AdditionalPrice> list = query.getResultList();
 		if (!list.isEmpty()) {
 			return list;
 		} else {

@@ -61,9 +61,9 @@ public class PlanController {
 	}
 
 	@DeleteMapping("/plan/{id}")
-	public ResponseDto deletePlan(@PathVariable int planId) {
+	public ResponseDto deletePlan(@PathVariable int id) {
 		ResponseDto resp = new ResponseDto();
-		PlanDto plan = service.deletePlan(planId);
+		PlanDto plan = service.deletePlan(id);
 		if (plan != null) {
 			resp.setResponse(plan);
 		} else {
@@ -81,7 +81,7 @@ public class PlanController {
 			resp.setResponse(list);
 		} else {
 			resp.setError(true);
-			resp.setResponse("unable to delete plans");
+			resp.setResponse("unable to get all plans");
 		}
 		return resp;
 	}

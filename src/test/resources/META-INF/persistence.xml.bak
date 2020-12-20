@@ -11,20 +11,20 @@
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
-				value="com.mysql.cj.jdbc.Driver" />
+				value="org.h2.Driver" />
 
 			<property name="javax.persistence.jdbc.url"
-				value="jdbc:mysql://localhost:3306/price_db" />
+				value="jdbc:h2:mem:testdb" />
 
-			<property name="javax.persistence.jdbc.user" value="mv" />
+			<property name="javax.persistence.jdbc.user" value="sa" />
 
 			<property name="javax.persistence.jdbc.password"
-				value="Mv@mysql" />
+				value="" />
 
 			<property name="hibernate.show_sql" value="true" />
 
 			<property name="hibernate.dialect"
-				value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+				value="org.hibernate.dialect.H2Dialect" />
 
 			<property name="hibernate.implicit_naming_strategy"
 				value="jpa" />

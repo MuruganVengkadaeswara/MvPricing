@@ -30,6 +30,7 @@ public class PlanDaoImpl implements PlanDao {
 	public Plan removePlanbyId(int planId) {
 		Plan plan = manager.find(Plan.class, planId);
 		if (plan != null) {
+			manager.remove(plan);
 			return plan;
 		} else {
 			return null;

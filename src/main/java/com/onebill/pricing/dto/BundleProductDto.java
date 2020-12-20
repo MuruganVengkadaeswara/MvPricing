@@ -3,16 +3,15 @@ package com.onebill.pricing.dto;
 import lombok.Data;
 
 @Data
-public class PlanDto {
+public class BundleProductDto {
 
-	private int planId;
+	private int bpId;
 
 	private ProductDto product;
 
-	private String extrasPaid;
-
-	private int validityDays;
-	
 	private int productId;
 
+	private BundleDto bundle;
+
+	private int bundleId;
 }
