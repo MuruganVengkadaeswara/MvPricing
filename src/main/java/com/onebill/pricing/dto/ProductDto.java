@@ -2,6 +2,7 @@ package com.onebill.pricing.dto;
 
 import java.util.List;
 
+
 import lombok.Data;
 
 @Data
@@ -11,6 +12,7 @@ public class ProductDto {
 
 	private String productName;
 
+//	@JsonIgnoreProperties(value={ "prodPriceId","productId" }, allowSetters=true)
 	private ProductPriceDto price;
 
 	private List<AdditionalPriceDto> additionalPrices;

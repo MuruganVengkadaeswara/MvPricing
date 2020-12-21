@@ -8,9 +8,7 @@ public class PlanDto {
 	private int planId;
 
 	private ProductDto product;
-
-	private String extrasPaid;
-
+	
 	private int validityDays;
 	
 	private int productId;

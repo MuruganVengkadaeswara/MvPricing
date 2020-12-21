@@ -2,6 +2,7 @@ package com.onebill.pricing.servicetest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -36,60 +37,39 @@ public class TestServiceManager {
 
 	@Test
 	public void testAddService() {
-		ServiceDto serv = new ServiceDto();
-		serv.setServiceName("Messaging");
+		ServiceDto serv = addDummyService("dummy");
 		logger.info(serv.toString());
-		assertNotNull(service.addService(serv));
+		assertTrue(serv.getServiceId() > 0);
+		assertEquals("dummy", serv.getServiceName());
 	}
-	
+
 	@Test
 	public void testRemoveService() {
-		ServiceDto serv = service.removeService(2);
-		assertNotNull(serv);
+		ServiceDto serv = addDummyService("dummy");
+		serv = service.removeService(serv.getServiceId());
+		assertEquals("dummy", serv.getServiceName());
 	}
-	
+
 	@Test
 	public void testUpdateService() {
-		ServiceDto serv = new ServiceDto();
-		serv.setServiceId(1);
-		serv.setServiceName("Jio Messaging");
+		ServiceDto serv = addDummyService("dummy");
+		serv.setServiceName("update dummy");
 		ServiceDto serv1 = service.updateService(serv);
 		assertEquals(serv, serv1);
 	}
-	
-	@Test
-	public void testDeleteService() {
-		assertNotNull(service.removeService(1));
-	}
-	
+
 	@Test
 	public void getAllServices() {
-		assertNotNull(service.getAllServices());
+		addDummyService("dummy");
+		List<ServiceDto> list = service.getAllServices();
+		assertTrue(!list.isEmpty());
 	}
-	
-	
-	public void addDummyService() {
+
+	public ServiceDto addDummyService(String name) {
 		ServiceDto s = new ServiceDto();
-		
-		
+		s.setServiceName(name);
+		return service.addService(s);
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

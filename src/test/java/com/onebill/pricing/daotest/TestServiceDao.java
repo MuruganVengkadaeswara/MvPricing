@@ -37,9 +37,9 @@ public class TestServiceDao {
 
 	@Test
 	public void testAddservice() throws Exception {
-		Service service = addDummyService("Voice");
+		Service service = addDummyService("Dummy");
 		logger.info("added service " + service);
-		assertEquals("Voice", service.getServiceName());
+		assertEquals("Dummy", service.getServiceName());
 	}
 
 	@Test(expected = PersistenceException.class)

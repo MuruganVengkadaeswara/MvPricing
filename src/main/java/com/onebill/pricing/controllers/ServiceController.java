@@ -2,6 +2,8 @@ package com.onebill.pricing.controllers;
 
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,13 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.dto.ServiceDto;
+import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.ServiceManagerService;
+
+import javassist.NotFoundException;
 
 @RestController
 public class ServiceController {
@@ -24,29 +28,28 @@ public class ServiceController {
 	ServiceManagerService service;
 
 	@GetMapping("/services")
-	public ResponseDto getAllServices() {
+	public ResponseDto getAllServices() throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<ServiceDto> dtolist = service.getAllServices();
 		if (!dtolist.isEmpty()) {
 			resp.setResponse(dtolist);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to fetch all services");
+			throw new NotFoundException("There Are no services");
 		}
-		return resp;
 	}
 
 	@GetMapping("/service/{id}")
-	public ResponseDto getService(@PathVariable int id) {
+	public ResponseDto getService(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto dto = service.getService(id);
 		if (dto != null) {
 			resp.setResponse(dto);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get service");
+			throw new NotFoundException("Service with id " + id + " is not found");
+
 		}
-		return resp;
 	}
 
 	@PostMapping("/service")
@@ -55,11 +58,10 @@ public class ServiceController {
 		ServiceDto serv = service.addService(dto);
 		if (serv != null) {
 			resp.setResponse(serv);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to add service");
+			throw new PersistenceException();
 		}
-		return resp;
 	}
 
 	@PutMapping("/service")
@@ -68,11 +70,10 @@ public class ServiceController {
 		ServiceDto serv = service.updateService(dto);
 		if (serv != null) {
 			resp.setResponse(serv);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to update service");
+			throw new PricingException("Unable to update the service");
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/service/{id}")
@@ -81,24 +82,22 @@ public class ServiceController {
 		ServiceDto serv = service.removeService(id);
 		if (serv != null) {
 			resp.setResponse(serv);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to delete service");
+			throw new PricingException("unable to delete the service");
 		}
-		return resp;
 	}
 
 	@GetMapping("/service/{id}/products")
-	public ResponseDto getAllProductsOfService(@PathVariable int id) {
+	public ResponseDto getAllProductsOfService(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<ProductDto> list = service.getAllProductsOfService(id);
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get all products");
+			throw new NotFoundException("There are no products");
 		}
-		return resp;
 
 	}
 

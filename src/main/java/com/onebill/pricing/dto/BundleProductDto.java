@@ -11,7 +11,7 @@ public class BundleProductDto {
 
 	private int productId;
 
-	private BundleDto bundle;
+//	private BundleDto bundle;
 
 	private int bundleId;
 }

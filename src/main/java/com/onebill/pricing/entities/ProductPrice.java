@@ -1,6 +1,5 @@
 package com.onebill.pricing.entities;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,10 +23,10 @@ public class ProductPrice {
 	private int prodPriceId;
 
 	@NotNull
-	@Column(name = "price")
+	@Column(name = "price", columnDefinition = "Decimal(10,2)")
 	private double price;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	@JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
 	private Product product;
 

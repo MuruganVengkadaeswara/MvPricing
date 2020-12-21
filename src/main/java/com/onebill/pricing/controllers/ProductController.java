@@ -18,7 +18,10 @@ import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.dto.ServiceDto;
+import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.ProductManagerService;
+
+import javassist.NotFoundException;
 
 @RestController
 public class ProductController {
@@ -27,16 +30,15 @@ public class ProductController {
 	ProductManagerService service;
 
 	@GetMapping("/products")
-	public ResponseDto getAllProducts() {
+	public ResponseDto getAllProducts() throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<ProductDto> list = service.getAllProducts();
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to fetch product list");
+			throw new NotFoundException("There Are no Products");
 		}
-		return resp;
 	}
 
 	@PostMapping("/product")
@@ -45,24 +47,23 @@ public class ProductController {
 		ProductDto dto1 = service.addProduct(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to add product");
+			throw new PricingException("unknown Error While adding Product");
+
 		}
-		return resp;
 	}
 
 	@GetMapping("/product/{id}")
-	public ResponseDto getProduct(@PathVariable int id) {
+	public ResponseDto getProduct(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto = service.getProduct(id);
 		if (dto != null) {
 			resp.setResponse(dto);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get product");
+			throw new NotFoundException("Product Not Found");
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/product/{id}")
@@ -71,11 +72,11 @@ public class ProductController {
 		ProductDto dto = service.removeProductById(id);
 		if (dto != null) {
 			resp.setResponse(dto);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to delete product");
+			throw new PricingException("unknown Error While deleting Product");
 		}
-		return resp;
+
 	}
 
 	@PutMapping("/product")
@@ -84,11 +85,10 @@ public class ProductController {
 		ProductDto dto1 = service.updateProduct(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to add product");
+			throw new PricingException("unknown Error While updating Product");
 		}
-		return resp;
 	}
 
 	// product services
@@ -99,11 +99,11 @@ public class ProductController {
 		ProductServiceDto dto1 = service.addProductService(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to add service to product");
+			throw new PricingException("unknown Error While adding product service");
+
 		}
-		return resp;
 	}
 
 	@PutMapping("/product/service")
@@ -112,11 +112,11 @@ public class ProductController {
 		ProductServiceDto dto1 = service.updateProductService(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to update service to product");
+			throw new PricingException("unknown Error While updating service of product");
+
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/product/services/{id}")
@@ -125,50 +125,48 @@ public class ProductController {
 		ProductServiceDto dto1 = service.deleteProductServiceById(id);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to delete service to product");
+			throw new PricingException("unknown Error While deleting service of product");
+
 		}
-		return resp;
 	}
 
 	@GetMapping("/product/services/{id}")
-	public ResponseDto getProductService(@PathVariable int id) {
+	public ResponseDto getProductService(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ProductServiceDto dto1 = service.getProductService(id);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get service of product");
+			throw new NotFoundException("The product service is not found");
 		}
-		return resp;
 	}
 
 	@GetMapping("/product/{id}/services")
-	public ResponseDto getAllProductServices(@PathVariable int id) {
+	public ResponseDto getAllProductServices(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<ProductServiceDto> list = service.getAllProductServiceByProdId(id);
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to fetch all the services");
+			throw new NotFoundException("There are no product services to the product " + id);
+
 		}
-		return resp;
 	}
 
 	@GetMapping("/product/services")
-	public ResponseDto getAllProductServices() {
+	public ResponseDto getAllProductServices() throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<ProductServiceDto> list = service.getAllProductService();
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to fetch all the services");
+			throw new NotFoundException("There are no product services");
 		}
-		return resp;
 	}
 
 	// extra price
@@ -193,24 +191,23 @@ public class ProductController {
 		AdditionalPriceDto dto1 = service.updateAddlPrice(dto);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to update extra price");
+			throw new PricingException("Unknown error while updating additional price");
 		}
-		return resp;
 	}
 
 	@GetMapping("/product/addlprices/{id}")
-	public ResponseDto getExtraPrice(@PathVariable int id) {
+	public ResponseDto getExtraPrice(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		AdditionalPriceDto dto1 = service.getAddlPriceById(id);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get extra price");
+			throw new NotFoundException("There are no additional prices to product");
+
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/product/addlprices/{id}")
@@ -219,24 +216,23 @@ public class ProductController {
 		AdditionalPriceDto dto1 = service.removeAddlPriceById(id);
 		if (dto1 != null) {
 			resp.setResponse(dto1);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to delete extra price");
+			throw new PricingException("Unknown error while deleting addl charge");
 		}
-		return resp;
 	}
 
 	@GetMapping("/product/{id}/addlprices")
-	public ResponseDto getAllExtraPrices(@PathVariable int id) {
+	public ResponseDto getAllExtraPrices(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<AdditionalPriceDto> list = service.getAddlPriceByProductId(id);
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to fetch all extra prices");
+			throw new NotFoundException("There are no additional price for product" + id);
+
 		}
-		return resp;
 	}
 
 	@PostMapping("/product/price")
@@ -245,11 +241,10 @@ public class ProductController {
 		ProductPriceDto price = service.addProductPrice(dto);
 		if (price != null) {
 			resp.setResponse(price);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to add price");
+			throw new PricingException("Unknown error While adding product price");
 		}
-		return resp;
 	}
 
 	@PutMapping("/product/price")
@@ -266,16 +261,15 @@ public class ProductController {
 	}
 
 	@GetMapping("/product/{id}/price")
-	public ResponseDto getProductPrice(@PathVariable int id) {
+	public ResponseDto getProductPrice(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ProductPriceDto price = service.getProuctPriceById(id);
 		if (price != null) {
 			resp.setResponse(price);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get price");
+			throw new NotFoundException("The product price with " + id + "is not found");
 		}
-		return resp;
 	}
 
 }

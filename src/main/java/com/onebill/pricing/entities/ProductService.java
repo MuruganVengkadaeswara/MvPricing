@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -41,16 +41,16 @@ public class ProductService {
 	private int serviceId;
 
 	@NotNull
-	@Column(name = "service_price")
+	@Column(name = "service_price", columnDefinition = "Decimal(10,2)")
 	private double servicePrice;
-	
+
 	@Column(name = "unit_type")
 	@NotNull
+	@Size(max = 10)
 	private String unitType;
 
+	@NotNull
 	@Column(name = "free_units")
 	private long freeUnits;
 
-	
-	
 }

@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dto.PlanDto;
 import com.onebill.pricing.dto.ResponseDto;
+import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.PlanManagerService;
+
+import javassist.NotFoundException;
 
 @RestController
 public class PlanController {
@@ -27,11 +30,10 @@ public class PlanController {
 		PlanDto plan = service.addPlan(dto);
 		if (plan != null) {
 			resp.setResponse(plan);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to add plan");
+			throw new PricingException("Error While Adding Plan");
 		}
-		return resp;
 	}
 
 	@PutMapping("/plan")
@@ -40,24 +42,23 @@ public class PlanController {
 		PlanDto plan = service.updatePlan(dto);
 		if (plan != null) {
 			resp.setResponse(plan);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to add plan");
+			throw new PricingException("Error While Updating Product");
+
 		}
-		return resp;
 	}
 
 	@GetMapping("/plan/{id}")
-	public ResponseDto getPlan(@PathVariable int id) {
+	public ResponseDto getPlan(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		PlanDto plan = service.getPlan(id);
 		if (plan != null) {
 			resp.setResponse(plan);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get plan");
+			throw new NotFoundException("The plan with " + id + " is not found");
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/plan/{id}")
@@ -66,24 +67,23 @@ public class PlanController {
 		PlanDto plan = service.deletePlan(id);
 		if (plan != null) {
 			resp.setResponse(plan);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to delete plan");
+			throw new PricingException("Error While deleting Plan");
+
 		}
-		return resp;
 	}
 
 	@GetMapping("/plans")
-	public ResponseDto getAllPlans() {
+	public ResponseDto getAllPlans() throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		List<PlanDto> list = service.getAllPlans();
 		if (!list.isEmpty()) {
 			resp.setResponse(list);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("unable to get all plans");
+			throw new NotFoundException("There Are No plans");
 		}
-		return resp;
 	}
 
 }

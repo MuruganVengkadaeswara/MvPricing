@@ -38,6 +38,9 @@ public class TestProductDao {
 	private ProductDao dao;
 
 	@Autowired
+	private ProductPriceDao pdao;
+
+	@Autowired
 	ApplicationContext context;
 
 	@Test
@@ -63,7 +66,8 @@ public class TestProductDao {
 	@Test
 	public void testRemoveProduct() {
 		Product p = addDummyProduct("dummy product");
-		assertEquals(p.getProductId(), dao.removeProductById(p.getProductId()).getProductId());
+		Product p1 = dao.removeProductById(p.getProductId());
+		assertEquals("dummy product", p1.getProductName());
 	}
 
 	@Test

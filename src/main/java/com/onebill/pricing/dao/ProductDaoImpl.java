@@ -11,13 +11,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Product;
-
+import com.sun.istack.logging.Logger;
 
 @Repository
 public class ProductDaoImpl implements ProductDao {
 
 	@PersistenceContext
 	EntityManager manager;
+
+	Logger logger = Logger.getLogger(ProductDaoImpl.class);
 
 	@Override
 	@Transactional
@@ -32,6 +34,7 @@ public class ProductDaoImpl implements ProductDao {
 		Product product = manager.find(Product.class, productId);
 		if (product != null) {
 			manager.remove(product);
+			logger.info("deleted" + product);
 			return product;
 		} else {
 			return null;
@@ -54,17 +57,17 @@ public class ProductDaoImpl implements ProductDao {
 	@Override
 	public Product getProduct(int productId) {
 		return manager.find(Product.class, productId);
+
 	}
 
 	@Override
 	public List<Product> getAllProducts() {
 		List<Product> list;
-		TypedQuery<Product> query = manager.createQuery("FROM Product",Product.class);
+		TypedQuery<Product> query = manager.createQuery("FROM Product", Product.class);
 		list = query.getResultList();
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			return list;
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

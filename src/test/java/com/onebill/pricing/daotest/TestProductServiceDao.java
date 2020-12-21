@@ -50,7 +50,7 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400);
+		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
 
 		ps = prodServDao.addProductService(ps);
 
@@ -68,9 +68,9 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400);
+		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
 
-		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400);
+		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
 
 	}
 
@@ -80,7 +80,7 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400);
+		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
 
 		ps.setFreeUnits(300);
 		ps.setServicePrice(0.2);
@@ -97,7 +97,7 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400);
+		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
 
 		ProductService ps1 = prodServDao.getProductServiceById(ps.getPsId());
 
@@ -127,12 +127,13 @@ public class TestProductServiceDao {
 		return servDao.addService(service);
 	}
 
-	public ProductService addDummyProductService(int productId, int serviceId, double price, long freeUnits) {
+	public ProductService addDummyProductService(int productId, int serviceId, double price, long freeUnits,String unitType) {
 		ProductService ps = new ProductService();
 		ps.setProductId(productId);
 		ps.setServiceId(serviceId);
 		ps.setServicePrice(price);
 		ps.setFreeUnits(freeUnits);
+		ps.setUnitType(unitType);
 		return prodServDao.addProductService(ps);
 	}
 

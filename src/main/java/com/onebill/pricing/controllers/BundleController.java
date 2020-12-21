@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
 import com.onebill.pricing.dto.ResponseDto;
+import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.BundleManagerService;
+
+import javassist.NotFoundException;
 
 @RestController
 public class BundleController {
@@ -26,11 +29,11 @@ public class BundleController {
 		BundleDto bundle = service.addBundle(dto);
 		if (bundle != null) {
 			resp.setResponse(bundle);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to add Bundle");
+			throw new PricingException("unknown Error While adding Bundle");
+
 		}
-		return resp;
 	}
 
 	@PutMapping("/bundle")
@@ -40,23 +43,22 @@ public class BundleController {
 		if (bundle != null) {
 			resp.setResponse(bundle);
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to update Bundle");
+			throw new PricingException("unknown Error While Updating Bundle");
+
 		}
 		return resp;
 	}
 
 	@GetMapping("/bundle/{id}")
-	public ResponseDto updateBundle(@PathVariable Integer id) {
+	public ResponseDto getBundle(@PathVariable Integer id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		BundleDto bundle = service.getBundle(id);
 		if (bundle != null) {
 			resp.setResponse(bundle);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to get Bundle");
+			throw new NotFoundException("The bundle with id " + id + " is not found");
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/bundle/{id}")
@@ -66,8 +68,7 @@ public class BundleController {
 		if (bundle != null) {
 			resp.setResponse(bundle);
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to delete Bundle");
+			throw new PricingException("unknown Error While deleting Bundle");
 		}
 		return resp;
 	}
@@ -80,24 +81,22 @@ public class BundleController {
 		BundleProductDto bp = service.addBundleProduct(dto);
 		if (bp != null) {
 			resp.setResponse(bp);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to add Bundle product");
+			throw new PricingException("unknown Error While adding Bundle product");
 		}
-		return resp;
 	}
 
 	@GetMapping("/bundle/product/{id}")
-	public ResponseDto getBundleProduct(@PathVariable Integer id) {
+	public ResponseDto getBundleProduct(@PathVariable Integer id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		BundleProductDto bp = service.getBundleProduct(id);
 		if (bp != null) {
 			resp.setResponse(bp);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to get Bundle product");
+			throw new NotFoundException("The bundle with id " + id + " is not found");
 		}
-		return resp;
 	}
 
 	@DeleteMapping("/bundle/product/{id}")
@@ -106,11 +105,11 @@ public class BundleController {
 		BundleProductDto bp = service.removeBundleProduct(id);
 		if (bp != null) {
 			resp.setResponse(bp);
+			return resp;
 		} else {
-			resp.setError(true);
-			resp.setResponse("Unable to get Bundle product");
+			throw new PricingException("unknown Error While deleting Bundle");
+
 		}
-		return resp;
 	}
 
 }

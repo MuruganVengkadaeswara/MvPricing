@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,8 +59,8 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	@Override
 	public ProductDto removeProductById(int productId) {
 		Product product = productdao.removeProductById(productId);
+		logger.info("Product Deleted" + product);
 		if (product != null) {
-			logger.info("Product Deleted" + product);
 			return mapper.map(product, ProductDto.class);
 		} else {
 			return null;
