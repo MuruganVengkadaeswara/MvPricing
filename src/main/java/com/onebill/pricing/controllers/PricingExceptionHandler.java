@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 public class PricingExceptionHandler {
 
 	@ExceptionHandler
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	ResponseDto handler(Exception e) {
 
 		ResponseDto resp = new ResponseDto();

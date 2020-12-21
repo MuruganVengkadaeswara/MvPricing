@@ -12,7 +12,6 @@ public class AdditionalPriceDto {
 
 	private String description;
 
-//	private ProductDto product;
 
 	private int productId;
 

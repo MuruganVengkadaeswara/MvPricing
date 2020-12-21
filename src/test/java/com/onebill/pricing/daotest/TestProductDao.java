@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -69,6 +70,26 @@ public class TestProductDao {
 		Product p1 = dao.removeProductById(p.getProductId());
 		assertEquals("dummy product", p1.getProductName());
 	}
+
+	@Test
+	public void removeProductWithPrice() {
+
+		Product p = addDummyProduct("dummy product");
+
+		ProductPrice price = new ProductPrice();
+		price.setPrice(400);
+		price.setProductId(p.getProductId());
+
+		price = pdao.addProductPrice(price);
+
+		Product p1 = dao.removeProductById(p.getProductId());
+		logger.info(p1.toString());
+
+		assertEquals("dummy product", p1.getProductName());
+		assertNull(pdao.getProductPrice(price.getProdPriceId()));
+
+	}
+
 
 	@Test
 	public void testUpdateProduct() {

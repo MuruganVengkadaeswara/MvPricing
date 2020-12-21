@@ -36,17 +36,17 @@ public class Product {
 	private String productName;
 
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "product", orphanRemoval = true)
 	private List<AdditionalPrice> additionalPrices;
 
-	@OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE)
+	@OneToOne(mappedBy = "product", orphanRemoval = true)
 	private ProductPrice price;
 
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "product", orphanRemoval = true)
 	private List<ProductService> services;
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "product", orphanRemoval = true)
 	private List<BundleProduct> bundleProducts;
 
 	@Column(name = "delete_status", columnDefinition = "boolean default false")

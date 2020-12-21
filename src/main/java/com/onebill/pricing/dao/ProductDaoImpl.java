@@ -10,7 +10,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
+import com.onebill.pricing.entities.AdditionalPrice;
 import com.onebill.pricing.entities.Product;
+import com.onebill.pricing.entities.ProductPrice;
+import com.onebill.pricing.entities.ProductService;
 import com.sun.istack.logging.Logger;
 
 @Repository
@@ -34,7 +37,6 @@ public class ProductDaoImpl implements ProductDao {
 		Product product = manager.find(Product.class, productId);
 		if (product != null) {
 			manager.remove(product);
-			logger.info("deleted" + product);
 			return product;
 		} else {
 			return null;
