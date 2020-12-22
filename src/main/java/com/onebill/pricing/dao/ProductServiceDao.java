@@ -24,6 +24,8 @@ public interface ProductServiceDao {
 
 	List<ProductService> getAllProductServicesByProductId(int prodId);
 
+	List<ProductService> removeAllProductServicesByProductId(int prodId);
+
 	List<ProductService> getAllProductServicesByServiceId(int servId);
 
 }

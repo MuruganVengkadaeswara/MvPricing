@@ -57,4 +57,22 @@ public class ProductPriceDaoImpl implements ProductPriceDao {
 		return manager.find(ProductPrice.class, productPriceId);
 	}
 
+	@Override
+	@Transactional
+	public ProductPrice removeProductPriceById(int prodId) {
+		TypedQuery<ProductPrice> query = manager.createQuery("FROM ProductPrice where productId= :id",
+				ProductPrice.class);
+		query.setParameter("id", prodId);
+
+		if (!query.getResultList().isEmpty()) {
+			ProductPrice p = query.getResultList().get(0);
+			manager.remove(p);
+			return p;
+		}
+		else {
+			
+			return null;
+		}
+	}
+
 }

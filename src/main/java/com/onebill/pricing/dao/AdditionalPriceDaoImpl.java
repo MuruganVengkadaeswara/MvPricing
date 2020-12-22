@@ -57,7 +57,8 @@ public class AdditionalPriceDaoImpl implements AdditionalPriceDao {
 	@Override
 	public List<AdditionalPrice> getAddlPriceByProductId(int prodId) {
 
-		TypedQuery<AdditionalPrice> query = manager.createQuery("FROM AdditionalPrice where productId= :id", AdditionalPrice.class);
+		TypedQuery<AdditionalPrice> query = manager.createQuery("FROM AdditionalPrice where productId= :id",
+				AdditionalPrice.class);
 		query.setParameter("id", prodId);
 		List<AdditionalPrice> list = query.getResultList();
 		if (!list.isEmpty()) {
@@ -65,6 +66,21 @@ public class AdditionalPriceDaoImpl implements AdditionalPriceDao {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	@Transactional
+	public List<AdditionalPrice> removeAddlPriceByProdId(int prodId) {
+		TypedQuery<AdditionalPrice> query = manager.createQuery("FROM AdditionalPrice where productId= :id",
+				AdditionalPrice.class);
+		query.setParameter("id", prodId);
+		List<AdditionalPrice> list = query.getResultList();
+		if (!list.isEmpty()) {
+			for (AdditionalPrice p : list) {
+				manager.remove(p);
+			}
+		}
+		return list;
 	}
 
 }

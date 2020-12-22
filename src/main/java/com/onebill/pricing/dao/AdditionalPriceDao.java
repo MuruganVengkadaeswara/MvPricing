@@ -16,4 +16,6 @@ public interface AdditionalPriceDao {
 
 	List<AdditionalPrice> getAddlPriceByProductId(int prodId);
 
+	List<AdditionalPrice> removeAddlPriceByProdId(int prodId);
+
 }

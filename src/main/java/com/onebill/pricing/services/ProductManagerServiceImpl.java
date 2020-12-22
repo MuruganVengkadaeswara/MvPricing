@@ -58,6 +58,9 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Override
 	public ProductDto removeProductById(int productId) {
+		priceDao.removeProductPriceById(productId);
+		expDao.removeAddlPriceById(productId);
+		prodServDao.removeAllProductServicesByProductId(productId);
 		Product product = productdao.removeProductById(productId);
 		logger.info("Product Deleted" + product);
 		if (product != null) {
