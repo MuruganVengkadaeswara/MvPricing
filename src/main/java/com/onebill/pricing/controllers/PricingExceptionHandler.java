@@ -6,9 +6,9 @@ import javax.validation.ConstraintViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.onebill.pricing.dto.ResponseDto;
+import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 
 import javassist.NotFoundException;
@@ -70,6 +70,19 @@ public class PricingExceptionHandler {
 	@ExceptionHandler(PricingException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	ResponseDto handleCommon(Exception e) {
+		ResponseDto resp = new ResponseDto();
+
+		resp.setError(true);
+
+		resp.setResponse(e.getMessage());
+
+		return resp;
+
+	}
+
+	@ExceptionHandler(PricingConflictsException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	ResponseDto handleConflicts(Exception e) {
 		ResponseDto resp = new ResponseDto();
 
 		resp.setError(true);

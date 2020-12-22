@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Service;
+import com.onebill.pricing.exceptions.PricingConflictsException;
 
 @Repository
 public class ServiceDaoImpl implements ServiceDao {
@@ -35,6 +36,7 @@ public class ServiceDaoImpl implements ServiceDao {
 		} else {
 			return null;
 		}
+
 	}
 
 	@Override

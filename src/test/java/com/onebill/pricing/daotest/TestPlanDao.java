@@ -19,8 +19,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dao.PlanDao;
 import com.onebill.pricing.dao.ProductDao;
+import com.onebill.pricing.dao.ProductPriceDao;
 import com.onebill.pricing.entities.Plan;
 import com.onebill.pricing.entities.Product;
+import com.onebill.pricing.entities.ProductPrice;
+import com.onebill.pricing.exceptions.PricingException;
 import com.sun.istack.logging.Logger;
 
 @Transactional
@@ -38,12 +41,16 @@ public class TestPlanDao {
 	@Autowired
 	ApplicationContext context;
 
+	@Autowired
+	ProductPriceDao priceDao;
+
 	Logger logger = Logger.getLogger(TestPlanDao.class);
 
 	@Test
 	public void testAddPlan() {
 
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		Plan plan = addDummyPlan(p.getProductId(), 30);
 
@@ -56,7 +63,7 @@ public class TestPlanDao {
 
 	}
 
-	@Test(expected = PersistenceException.class)
+	@Test(expected = PricingException.class)
 	public void testAddPlanWithoutProduct() {
 
 		Plan plan = new Plan();
@@ -68,6 +75,7 @@ public class TestPlanDao {
 	public void testUpdatePlan() {
 
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		Plan plan = addDummyPlan(p.getProductId(), 30);
 
@@ -83,6 +91,7 @@ public class TestPlanDao {
 	public void testRemovePlan() {
 
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		Plan plan = addDummyPlan(p.getProductId(), 30);
 
@@ -97,6 +106,7 @@ public class TestPlanDao {
 	public void testGetPlanById() {
 
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		Plan plan = addDummyPlan(p.getProductId(), 30);
 
@@ -112,6 +122,9 @@ public class TestPlanDao {
 		Product p = addDummyProduct("dummy product");
 		Product p1 = addDummyProduct("dummy product1");
 		Product p2 = addDummyProduct("dummy product2");
+		addDummyPrice(p.getProductId(), 100);
+		addDummyPrice(p1.getProductId(), 100);
+		addDummyPrice(p2.getProductId(), 100);
 
 		addDummyPlan(p.getProductId(), 30);
 		addDummyPlan(p1.getProductId(), 40);
@@ -127,6 +140,7 @@ public class TestPlanDao {
 	public void addDuplicateProductToPlan() {
 
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		addDummyPlan(p.getProductId(), 30);
 		addDummyPlan(p.getProductId(), 40);
@@ -137,6 +151,13 @@ public class TestPlanDao {
 		Product product = new Product();
 		product.setProductName(name);
 		return prodDao.addProduct(product);
+	}
+
+	public ProductPrice addDummyPrice(int productId, double amt) {
+		ProductPrice price = new ProductPrice();
+		price.setProductId(productId);
+		price.setPrice(amt);
+		return priceDao.addProductPrice(price);
 	}
 
 	public Plan addDummyPlan(int productId, int days) {

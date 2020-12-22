@@ -3,13 +3,17 @@ package com.onebill.pricing.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.ConstraintViolationException;
+
 import org.jboss.logging.Logger;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.onebill.pricing.dao.AdditionalPriceDao;
+import com.onebill.pricing.dao.BundleProductDao;
 import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductPriceDao;
 import com.onebill.pricing.dao.ProductServiceDao;
@@ -22,6 +26,10 @@ import com.onebill.pricing.entities.AdditionalPrice;
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.ProductPrice;
 import com.onebill.pricing.entities.ProductService;
+import com.onebill.pricing.exceptions.PricingConflictsException;
+import com.onebill.pricing.exceptions.PricingException;
+
+import javassist.NotFoundException;
 
 @Service
 public class ProductManagerServiceImpl implements ProductManagerService {
@@ -39,65 +47,90 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	AdditionalPriceDao expDao;
 
 	@Autowired
+	BundleProductDao bpDao;
+
+	@Autowired
 	private ModelMapper mapper;
 
 	Logger logger = Logger.getLogger(ProductManagerServiceImpl.class);
 
 	@Override
 	public ProductDto addProduct(ProductDto dto) {
-		Product product = mapper.map(dto, Product.class);
-		productdao.addProduct(product);
-		if (product != null) {
-			logger.info("Product Added" + product);
-			return mapper.map(product, ProductDto.class);
+
+		if (dto.getProductName().matches("[A-Za-z ]{2,25}")) {
+			Product product = mapper.map(dto, Product.class);
+			productdao.addProduct(product);
+			if (product != null) {
+				logger.info("Product Added" + product);
+				return mapper.map(product, ProductDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException(
+					"The Product Name must contain only letters,numbers,spaces and with in 2 and 25 characters");
 		}
 
 	}
 
 	@Override
-	public ProductDto removeProductById(int productId) {
-		priceDao.removeProductPriceById(productId);
-		expDao.removeAddlPriceById(productId);
-		prodServDao.removeAllProductServicesByProductId(productId);
-		Product product = productdao.removeProductById(productId);
-		logger.info("Product Deleted" + product);
-		if (product != null) {
-			return mapper.map(product, ProductDto.class);
+	public ProductDto removeProductById(int productId) throws ConstraintViolationException {
+
+		if (productId > 0) {
+			// prodServDao.removeAllProductServicesByProductId(productId);
+			bpDao.removeBundleProductByProductId(productId);
+			priceDao.removeProductPriceById(productId);
+			expDao.removeAddlPriceByProdId(productId);
+			Product product = productdao.removeProductById(productId);
+			logger.info("Product Deleted" + product);
+			if (product != null) {
+				return mapper.map(product, ProductDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("Product Id must be greater than 0");
 		}
 
 	}
 
 	@Override
 	public ProductDto updateProduct(ProductDto dto) {
-		Product product = mapper.map(dto, Product.class);
-		productdao.updateProduct(product);
-		if (product != null) {
-			logger.info("Product Updated" + product);
-			return mapper.map(product, ProductDto.class);
-		} else {
-			return null;
+		if (dto.getProductId() > 0 && dto.getProductName().matches("[A-Za-z ]{2,25}")) {
+			Product product = mapper.map(dto, Product.class);
+			productdao.updateProduct(product);
+			if (product != null) {
+				logger.info("Product Updated" + product);
+				return mapper.map(product, ProductDto.class);
+			} else {
+				return null;
 
+			}
+		} else {
+			throw new PricingConflictsException(
+					"The product id must be > 0 and name must contain only letters and spaces");
 		}
+
 	}
 
 	@Override
 	public ProductDto getProduct(int productId) {
-		Product product = productdao.getProduct(productId);
-		logger.info(product);
-		if (product != null) {
-			return mapper.map(product, ProductDto.class);
-		} else {
-			return null;
+		if (productId > 0) {
+			Product product = productdao.getProduct(productId);
+			logger.info(product);
+			if (product != null) {
+				return mapper.map(product, ProductDto.class);
+			} else {
+				return null;
 
+			}
+		} else {
+			throw new PricingConflictsException("Product Id must be greater than 0");
 		}
 	}
 
 	@Override
-	public List<ProductDto> getAllProducts() {
+	public List<ProductDto> getAllProducts() throws NotFoundException {
 
 		List<Product> list = productdao.getAllProducts();
 		List<ProductDto> dtolist = new ArrayList<>();
@@ -105,13 +138,15 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			for (Product p : list) {
 				dtolist.add(mapper.map(p, ProductDto.class));
 			}
+			return dtolist;
+		} else {
+			throw new NotFoundException("There Are No Products");
 		}
-		return dtolist;
-
 	}
 
 	@Override
 	public ProductServiceDto addProductService(ProductServiceDto dto) {
+
 		ProductService ps = mapper.map(dto, ProductService.class);
 		prodServDao.addProductService(ps);
 		if (ps != null) {

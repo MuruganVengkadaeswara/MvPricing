@@ -20,6 +20,8 @@ import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.services.ProductManagerService;
 
+import javassist.NotFoundException;
+
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PricingAppConfiguration.class)
@@ -65,7 +67,7 @@ public class TestProductManagerService {
 	}
 
 	@Test
-	public void testGetAllProducts() {
+	public void testGetAllProducts() throws NotFoundException {
 		addDummyProduct("dummy");
 		List<ProductDto> list = service.getAllProducts();
 		assertTrue(!list.isEmpty());

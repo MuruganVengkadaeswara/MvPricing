@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,8 +43,8 @@ public class Product {
 	@OneToOne(mappedBy = "product", orphanRemoval = true)
 	private ProductPrice price;
 
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@OneToMany(mappedBy = "product", orphanRemoval = true)
+	// @LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true, cascade = CascadeType.REMOVE)
 	private List<ProductService> services;
 
 	@OneToMany(mappedBy = "product", orphanRemoval = true)

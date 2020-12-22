@@ -268,7 +268,7 @@ public class ProductController {
 			resp.setResponse(price);
 			return resp;
 		} else {
-			throw new NotFoundException("The product price with " + id + "is not found");
+			throw new NotFoundException("The product price with product id " + id + " is not found");
 		}
 	}
 

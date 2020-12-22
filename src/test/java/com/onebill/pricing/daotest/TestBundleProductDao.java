@@ -17,9 +17,11 @@ import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dao.BundleDao;
 import com.onebill.pricing.dao.BundleProductDao;
 import com.onebill.pricing.dao.ProductDao;
+import com.onebill.pricing.dao.ProductPriceDao;
 import com.onebill.pricing.entities.Bundle;
 import com.onebill.pricing.entities.BundleProduct;
 import com.onebill.pricing.entities.Product;
+import com.onebill.pricing.entities.ProductPrice;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,6 +39,9 @@ public class TestBundleProductDao {
 	ProductDao pDao;
 
 	@Autowired
+	ProductPriceDao priceDao;
+
+	@Autowired
 	ApplicationContext context;
 
 	@Test
@@ -44,6 +49,7 @@ public class TestBundleProductDao {
 
 		Bundle b = addDummyBundle("dummy bundle", 30);
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		BundleProduct bp = new BundleProduct();
 		bp.setBundleId(b.getBundleId());
@@ -61,6 +67,7 @@ public class TestBundleProductDao {
 
 		Bundle b = addDummyBundle("dummy bundle", 30);
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		BundleProduct bp = new BundleProduct();
 		bp.setBundleId(b.getBundleId());
@@ -78,6 +85,7 @@ public class TestBundleProductDao {
 	public void removeBundleProduct() {
 		Bundle b = addDummyBundle("dummy bundle", 30);
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		BundleProduct bp = new BundleProduct();
 		bp.setBundleId(b.getBundleId());
@@ -95,6 +103,7 @@ public class TestBundleProductDao {
 	public void getBundleProductById() {
 		Bundle b = addDummyBundle("dummy bundle", 30);
 		Product p = addDummyProduct("dummy product");
+		addDummyPrice(p.getProductId(), 100);
 
 		BundleProduct bp = new BundleProduct();
 		bp.setBundleId(b.getBundleId());
@@ -120,6 +129,13 @@ public class TestBundleProductDao {
 		Product p = new Product();
 		p.setProductName(name);
 		return pDao.addProduct(p);
+	}
+
+	public ProductPrice addDummyPrice(int productId, double price) {
+		ProductPrice p = new ProductPrice();
+		p.setProductId(productId);
+		p.setPrice(price);
+		return priceDao.addProductPrice(p);
 	}
 
 }

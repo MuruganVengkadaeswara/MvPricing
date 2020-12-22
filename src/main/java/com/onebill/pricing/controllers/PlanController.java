@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dto.PlanDto;
+import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.PlanManagerService;
@@ -61,15 +62,27 @@ public class PlanController {
 		}
 	}
 
+	@GetMapping("/plan/{id}/product")
+	public ResponseDto getPlanProducts(@PathVariable int id) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		List<ProductDto> list = service.getAllProductsOfPlan(id);
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
+			return resp;
+		} else {
+			throw new NotFoundException("The products to plan with " + id + " are not found");
+		}
+	}
+
 	@DeleteMapping("/plan/{id}")
-	public ResponseDto deletePlan(@PathVariable int id) {
+	public ResponseDto deletePlan(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		PlanDto plan = service.deletePlan(id);
 		if (plan != null) {
 			resp.setResponse(plan);
 			return resp;
 		} else {
-			throw new PricingException("Error While deleting Plan");
+			throw new NotFoundException("Plan Doesn't Exist");
 
 		}
 	}

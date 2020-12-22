@@ -3,6 +3,9 @@ package com.onebill.pricing.services;
 import java.util.List;
 
 import com.onebill.pricing.dto.PlanDto;
+import com.onebill.pricing.dto.ProductDto;
+
+import javassist.NotFoundException;
 
 public interface PlanManagerService {
 
@@ -15,5 +18,7 @@ public interface PlanManagerService {
 	PlanDto getPlan(int planId);
 
 	List<PlanDto> getAllPlans();
+
+	List<ProductDto> getAllProductsOfPlan(int planId) throws NotFoundException;
 
 }

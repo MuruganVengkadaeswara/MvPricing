@@ -33,7 +33,4 @@ public class Service {
 	@Column(name = "service_name", unique = true)
 	private String serviceName;
 
-	@OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	private List<ProductService> services;
 }

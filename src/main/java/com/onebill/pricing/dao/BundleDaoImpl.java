@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Bundle;
+import com.onebill.pricing.entities.ProductPrice;
 
 @Repository
 public class BundleDaoImpl implements BundleDao {

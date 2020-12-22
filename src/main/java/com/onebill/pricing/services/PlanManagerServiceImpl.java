@@ -9,7 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.onebill.pricing.dao.PlanDao;
 import com.onebill.pricing.dto.PlanDto;
+import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.entities.Plan;
+import com.onebill.pricing.entities.Product;
+import com.onebill.pricing.exceptions.PricingException;
+
+import javassist.NotFoundException;
 
 @Service
 public class PlanManagerServiceImpl implements PlanManagerService {
@@ -22,44 +27,64 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 
 	@Override
 	public PlanDto addPlan(PlanDto dto) {
-		Plan plan = mapper.map(dto, Plan.class);
-		plan = plandao.addPlan(plan);
-		if (plan != null) {
-			return mapper.map(plan, PlanDto.class);
+		if (dto.getProductId() > 0) {
+			Plan plan = mapper.map(dto, Plan.class);
+			plan = plandao.addPlan(plan);
+			if (plan != null) {
+				return mapper.map(plan, PlanDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("Product id must be > 0");
 		}
+
 	}
 
 	@Override
 	public PlanDto updatePlan(PlanDto dto) {
-		Plan plan = mapper.map(dto, Plan.class);
-		plan = plandao.updatePlan(plan);
-		if (plan != null) {
-			return mapper.map(plan, PlanDto.class);
+		if (dto.getPlanId() > 0 && dto.getValidityDays() > 0) {
+			Plan plan = mapper.map(dto, Plan.class);
+			plan = plandao.updatePlan(plan);
+			if (plan != null) {
+				return mapper.map(plan, PlanDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("The plan id and validity days must be greater than 0");
 		}
+
 	}
 
 	@Override
 	public PlanDto deletePlan(int planId) {
-		Plan plan = plandao.removePlanbyId(planId);
-		if (plan != null) {
-			return mapper.map(plan, PlanDto.class);
+		if (planId > 0) {
+			Plan plan = plandao.removePlanbyId(planId);
+			if (plan != null) {
+				return mapper.map(plan, PlanDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("plan id must be > 0");
 		}
+
 	}
 
 	@Override
 	public PlanDto getPlan(int planId) {
-		Plan plan = plandao.getPlanById(planId);
-		if (plan != null) {
-			return mapper.map(plan, PlanDto.class);
+		if (planId > 0) {
+			Plan plan = plandao.getPlanById(planId);
+			if (plan != null) {
+				return mapper.map(plan, PlanDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("The Plan Id must be greater than 0");
 		}
+
 	}
 
 	@Override
@@ -69,6 +94,18 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 		if (!list.isEmpty()) {
 			for (Plan p : list) {
 				dtolist.add(mapper.map(p, PlanDto.class));
+			}
+		}
+		return dtolist;
+	}
+
+	@Override
+	public List<ProductDto> getAllProductsOfPlan(int planId) throws NotFoundException {
+		List<Product> list = plandao.getAllProductsOfPlan(planId);
+		List<ProductDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (Product p : list) {
+				dtolist.add(mapper.map(p, ProductDto.class));
 			}
 		}
 		return dtolist;

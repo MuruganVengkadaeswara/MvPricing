@@ -50,7 +50,7 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
+		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400, "mb");
 
 		ps = prodServDao.addProductService(ps);
 
@@ -68,9 +68,9 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
+		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400, "mb");
 
-		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
+		addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400, "mb");
 
 	}
 
@@ -80,7 +80,7 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
+		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400, "mb");
 
 		ps.setFreeUnits(300);
 		ps.setServicePrice(0.2);
@@ -97,24 +97,30 @@ public class TestProductServiceDao {
 		Product product = addDummyProduct();
 		Service service = addDummyService();
 
-		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400,"mb");
+		ProductService ps = addDummyProductService(product.getProductId(), service.getServiceId(), 0.5, 400, "mb");
 
 		ProductService ps1 = prodServDao.getProductServiceById(ps.getPsId());
 
 		assertNotNull(ps1);
 
 	}
-	
-	
 
 	@Test
 	public void testGetAllProductServiceWithEmptyDB() {
 		assertTrue(prodServDao.getAllProductServices().isEmpty());
 	}
 
-	
-	
-	
+	@Test
+	public void testRemoveProductServiceByProductId() {
+		Product p = addDummyProduct();
+		Service s = addDummyService();
+
+		ProductService ps = addDummyProductService(p.getProductId(), s.getServiceId(), 400, 1000, "mins");
+
+		prodServDao.removeAllProductServicesByProductId(p.getProductId());
+
+	}
+
 	public Product addDummyProduct() {
 		Product product = new Product();
 		product.setProductName("dummy product");
@@ -127,7 +133,8 @@ public class TestProductServiceDao {
 		return servDao.addService(service);
 	}
 
-	public ProductService addDummyProductService(int productId, int serviceId, double price, long freeUnits,String unitType) {
+	public ProductService addDummyProductService(int productId, int serviceId, double price, long freeUnits,
+			String unitType) {
 		ProductService ps = new ProductService();
 		ps.setProductId(productId);
 		ps.setServiceId(serviceId);

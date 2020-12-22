@@ -125,6 +125,7 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 	}
 
 	@Override
+	@Transactional
 	public List<ProductService> removeAllProductServicesByProductId(int prodId) {
 		TypedQuery<ProductService> query = manager.createQuery("FROM ProductService where productId= :id",
 				ProductService.class);
@@ -132,8 +133,11 @@ public class ProductServiceDaoImpl implements ProductServiceDao {
 		List<ProductService> list = query.getResultList();
 		if (!list.isEmpty()) {
 			for (ProductService p : list) {
+				logger.error(p.toString());
 				manager.remove(p);
 			}
+		} else {
+			logger.error("LIST IS EMPTY");
 		}
 		return list;
 	}

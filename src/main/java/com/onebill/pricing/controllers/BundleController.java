@@ -1,5 +1,7 @@
 package com.onebill.pricing.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
+import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.BundleManagerService;
@@ -34,6 +37,19 @@ public class BundleController {
 			throw new PricingException("unknown Error While adding Bundle");
 
 		}
+	}
+
+	@GetMapping("/bundles")
+	public ResponseDto getAllBundles() throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		List<BundleDto> list = service.getAllBundles();
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
+			return resp;
+		} else {
+			throw new NotFoundException("There are no Bundles");
+		}
+
 	}
 
 	@PutMapping("/bundle")
@@ -93,6 +109,18 @@ public class BundleController {
 		BundleProductDto bp = service.getBundleProduct(id);
 		if (bp != null) {
 			resp.setResponse(bp);
+			return resp;
+		} else {
+			throw new NotFoundException("The bundle with id " + id + " is not found");
+		}
+	}
+
+	@GetMapping("/bundle/{id}/products")
+	public ResponseDto getBundleProducts(@PathVariable Integer id) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		List<ProductDto> list = service.getAllProductsOfbundle(id);
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
 			return resp;
 		} else {
 			throw new NotFoundException("The bundle with id " + id + " is not found");

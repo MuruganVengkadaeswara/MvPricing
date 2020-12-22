@@ -13,6 +13,8 @@ import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.Service;
+import com.onebill.pricing.exceptions.PricingConflictsException;
+import com.onebill.pricing.exceptions.PricingException;
 
 @org.springframework.stereotype.Service
 public class ServiceManagerServiceImpl implements ServiceManagerService {
@@ -30,49 +32,70 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 
 	@Override
 	public ServiceDto addService(ServiceDto dto) {
-		Service service = mapper.map(dto, Service.class);
-		servicedao.addService(service);
-		if (service != null) {
-			logger.info("Service added" + service);
-			return mapper.map(service, ServiceDto.class);
+		if (dto.getServiceName().matches("[A-Za-z ]{2,25}")) {
+			Service service = mapper.map(dto, Service.class);
+			servicedao.addService(service);
+			if (service != null) {
+				logger.info("Service added" + service);
+				return mapper.map(service, ServiceDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingConflictsException(
+					"The service Name Must contain be only numbers,letters and spaces and must be within 2 and 25 characters");
 		}
 	}
 
 	@Override
 	public ServiceDto removeService(int serviceId) {
-		Service service = servicedao.removeService(serviceId);
-		if (service != null) {
-			logger.info("Service deleted" + service);
-			return mapper.map(service, ServiceDto.class);
+		if (serviceId > 0) {
+			Service service = servicedao.removeService(serviceId);
+			if (service != null) {
+				logger.info("Service deleted" + service);
+				return mapper.map(service, ServiceDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("Service Id must be greater than 0");
 		}
 
 	}
 
 	@Override
 	public ServiceDto updateService(ServiceDto dto) {
-		Service service = mapper.map(dto, Service.class);
-		service = servicedao.updateService(service);
-		if (service != null) {
-			logger.info("service updated" + service);
-			return mapper.map(service, ServiceDto.class);
+
+		if (dto.getServiceId() > 0 && dto.getServiceName().matches("[A-Za-z ]{2,25}")) {
+			Service service = mapper.map(dto, Service.class);
+			service = servicedao.updateService(service);
+			if (service != null) {
+				logger.info("service updated" + service);
+				return mapper.map(service, ServiceDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("the service id must be greater than 0 and name must have spaces and numbers");
 		}
+
 	}
 
 	@Override
 	public ServiceDto getService(int serviceId) {
-		Service service = servicedao.getService(serviceId);
-		if (service != null) {
-			logger.info("service returned" + service);
-			return mapper.map(service, ServiceDto.class);
+
+		if (serviceId > 0) {
+			Service service = servicedao.getService(serviceId);
+			if (service != null) {
+				logger.info("service returned" + service);
+				return mapper.map(service, ServiceDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingException("The service id must be greater than 0");
 		}
+
 	}
 
 	@Override
@@ -89,15 +112,21 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 
 	@Override
 	public List<ProductDto> getAllProductsOfService(int serviceId) {
-		List<Product> list = prodServDao.getAllProductbyServiceId(serviceId);
-		logger.info(list);
-		List<ProductDto> dtolist = new ArrayList<>();
-		if (!list.isEmpty()) {
-			for (Product p : list) {
-				dtolist.add(mapper.map(p, ProductDto.class));
+
+		if (serviceId > 0) {
+			List<Product> list = prodServDao.getAllProductbyServiceId(serviceId);
+			logger.info(list);
+			List<ProductDto> dtolist = new ArrayList<>();
+			if (!list.isEmpty()) {
+				for (Product p : list) {
+					dtolist.add(mapper.map(p, ProductDto.class));
+				}
 			}
+			return dtolist;
+		} else {
+			throw new PricingException("service Id must be greater than 0");
 		}
-		return dtolist;
+
 	}
 
 }

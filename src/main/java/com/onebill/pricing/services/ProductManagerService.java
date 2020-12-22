@@ -10,6 +10,8 @@ import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.AdditionalPrice;
 import com.onebill.pricing.entities.Product;
 
+import javassist.NotFoundException;
+
 public interface ProductManagerService {
 
 	// product crud
@@ -22,7 +24,7 @@ public interface ProductManagerService {
 
 	ProductDto getProduct(int productId);
 
-	List<ProductDto> getAllProducts();
+	List<ProductDto> getAllProducts() throws NotFoundException;
 
 	// product Service crud
 
