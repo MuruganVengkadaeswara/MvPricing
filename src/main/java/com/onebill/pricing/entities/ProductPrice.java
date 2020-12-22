@@ -31,7 +31,7 @@ public class ProductPrice {
 	@JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
 	private Product product;
 
-	@Column(name = "product_id")
+	@Column(name = "product_id", unique = true)
 	private int productId;
 
 }
