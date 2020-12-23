@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
+import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.Service;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 
@@ -61,8 +62,16 @@ public class ServiceDaoImpl implements ServiceDao {
 		List<Service> list;
 		TypedQuery<Service> query = manager.createQuery("FROM Service", Service.class);
 		list = query.getResultList();
+		return list;
+	}
+
+	@Override
+	public Service getServiceByName(String text) {
+		TypedQuery<Service> query = manager.createQuery("FROM Service where serviceName= :name", Service.class);
+		query.setParameter("name", text);
+		List<Service> list = query.getResultList();
 		if (!list.isEmpty()) {
-			return list;
+			return list.get(0);
 		} else {
 			return null;
 		}

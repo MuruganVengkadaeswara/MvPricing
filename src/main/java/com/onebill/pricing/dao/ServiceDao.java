@@ -16,4 +16,6 @@ public interface ServiceDao {
 
 	List<Service> getAllServices();
 
+	Service getServiceByName(String text);
+
 }

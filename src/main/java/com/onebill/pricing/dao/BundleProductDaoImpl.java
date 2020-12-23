@@ -27,7 +27,7 @@ public class BundleProductDaoImpl implements BundleProductDao {
 
 		TypedQuery<ProductPrice> query = manager.createQuery("FROM ProductPrice where productId= :id",
 				ProductPrice.class);
-		query.setParameter("id", bundleProduct.getBundle().getBundleId());
+		query.setParameter("id", bundleProduct.getProductId());
 		if (!query.getResultList().isEmpty()) {
 			manager.persist(bundleProduct);
 			return bundleProduct;
@@ -83,6 +83,21 @@ public class BundleProductDaoImpl implements BundleProductDao {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public BundleProduct removeProductOfBundle(int productId, int BundleId) {
+
+		TypedQuery<BundleProduct> query = manager
+				.createQuery("FROM BundleProduct where bundleId= :bid and productId= :pid", BundleProduct.class);
+		query.setParameter("pid", productId);
+		query.setParameter("bid", BundleId);
+		List<BundleProduct> list = query.getResultList();
+		if (!list.isEmpty()) {
+			manager.remove(list.get(0));
+			return list.get(0);
+		}
+		return null;
 	}
 
 }

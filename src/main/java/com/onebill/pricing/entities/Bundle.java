@@ -33,9 +33,13 @@ public class Bundle {
 	@Size(max = 25)
 	private String bundleName;
 
+	// @NotNull
+	// @Column(name = "validity_days")
+	// private int validityDays;
+
 	@NotNull
-	@Column(name = "validity_days")
-	private int validityDays;
+	@Size(max = 20)
+	private String bundleType;
 
 	@OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
 	@LazyCollection(LazyCollectionOption.FALSE)

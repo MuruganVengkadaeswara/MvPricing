@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.Bundle;
+import com.onebill.pricing.entities.BundleProduct;
+import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.ProductPrice;
 
 @Repository
@@ -62,6 +64,18 @@ public class BundleDaoImpl implements BundleDao {
 	public List<Bundle> getAllBundles() {
 		TypedQuery<Bundle> query = manager.createQuery("FROM Bundle", Bundle.class);
 		return query.getResultList();
+	}
+
+	@Override
+	public Bundle getBundleByName(String text) {
+		TypedQuery<Bundle> query = manager.createQuery("FROM Bundle where bundleName= :name", Bundle.class);
+		query.setParameter("name", text);
+		List<Bundle> list = query.getResultList();
+		if (!list.isEmpty()) {
+			return list.get(0);
+		} else {
+			return null;
+		}
 	}
 
 }

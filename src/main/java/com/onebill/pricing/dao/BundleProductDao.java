@@ -16,4 +16,6 @@ public interface BundleProductDao {
 	public List<BundleProduct> removeBundleProductByProductId(int id);
 
 	public List<Product> getAllProductsOfbundle(int bundleId);
+
+	public BundleProduct removeProductOfBundle(int productId, int BundleId);
 }

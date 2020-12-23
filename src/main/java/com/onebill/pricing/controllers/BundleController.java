@@ -78,7 +78,7 @@ public class BundleController {
 	}
 
 	@DeleteMapping("/bundle/{id}")
-	public ResponseDto deleteBundle(@PathVariable Integer id) {
+	public ResponseDto deleteBundle(@PathVariable Integer id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		BundleDto bundle = service.removeBundel(id);
 		if (bundle != null) {
@@ -131,6 +131,19 @@ public class BundleController {
 	public ResponseDto deleteBundleProduct(@PathVariable Integer id) {
 		ResponseDto resp = new ResponseDto();
 		BundleProductDto bp = service.removeBundleProduct(id);
+		if (bp != null) {
+			resp.setResponse(bp);
+			return resp;
+		} else {
+			throw new PricingException("unknown Error While deleting Bundle");
+
+		}
+	}
+
+	@DeleteMapping("/bundle/{bid}/product/{pid}")
+	public ResponseDto deleteBundleProduct(@PathVariable int bid, @PathVariable int pid) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		BundleProductDto bp = service.removeProductOfBundle(bid, pid);
 		if (bp != null) {
 			resp.setResponse(bp);
 			return resp;

@@ -16,4 +16,6 @@ public interface BundleDao {
 
 	public List<Bundle> getAllBundles();
 
+	public Bundle getBundleByName(String text);
+
 }

@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -44,15 +45,11 @@ public class Product {
 	@OneToOne(mappedBy = "product", orphanRemoval = true)
 	private ProductPrice price;
 
-	 @LazyCollection(LazyCollectionOption.FALSE)
+	@LazyCollection(LazyCollectionOption.FALSE)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true, cascade = CascadeType.REMOVE)
 	private List<ProductService> services;
 
 	@OneToMany(mappedBy = "product", orphanRemoval = true)
 	private List<BundleProduct> bundleProducts;
-
-	@Column(name = "delete_status", columnDefinition = "boolean default false")
-	@Getter
-	private boolean deleteStatus;
 
 }

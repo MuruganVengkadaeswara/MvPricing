@@ -39,7 +39,6 @@ public class TestBundleDao {
 		Bundle b = addDummyBundle("Dummy", 500);
 		assertTrue(b.getBundleId() > 0);
 		assertEquals("Dummy", b.getBundleName());
-		assertEquals(500, b.getValidityDays());
 
 	}
 
@@ -53,13 +52,11 @@ public class TestBundleDao {
 	public void testUpdateBundle() {
 		Bundle b = addDummyBundle("Dummy", 400);
 		b.setBundleName("Update Dummy");
-		b.setValidityDays(450);
 
 		Bundle b1 = dao.updateBundle(b);
 
 		assertEquals(b.getBundleId(), b1.getBundleId());
 		assertEquals("Update Dummy", b1.getBundleName());
-		assertEquals(450, b1.getValidityDays());
 
 	}
 
@@ -72,7 +69,6 @@ public class TestBundleDao {
 
 		assertEquals(b.getBundleId(), b1.getBundleId());
 		assertEquals("Dummy", b1.getBundleName());
-		assertEquals(200, b1.getValidityDays());
 
 	}
 
@@ -85,8 +81,7 @@ public class TestBundleDao {
 
 		List<Bundle> bundles = dao.getAllBundles();
 
-		assertEquals("dummy 3", bundles.get(bundles.size()-1).getBundleName());
-		assertEquals(300, bundles.get(bundles.size()-1).getValidityDays());
+		assertEquals("dummy 3", bundles.get(bundles.size() - 1).getBundleName());
 		assertTrue(!bundles.isEmpty());
 
 	}
@@ -94,7 +89,6 @@ public class TestBundleDao {
 	public Bundle addDummyBundle(String name, int days) {
 		Bundle bundle = new Bundle();
 		bundle.setBundleName(name);
-		bundle.setValidityDays(days);
 		return dao.addBundle(bundle);
 	}
 

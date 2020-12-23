@@ -1,11 +1,13 @@
 package com.onebill.pricing.servicetest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +18,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dto.PlanDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductPriceDto;
+import com.onebill.pricing.entities.Plan;
+import com.onebill.pricing.exceptions.PricingConflictsException;
+import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.PlanManagerService;
 import com.onebill.pricing.services.ProductManagerService;
 
@@ -34,59 +40,68 @@ public class TestPlanManagerservice {
 	@Autowired
 	ProductManagerService prodService;
 
-	@Test
-	public void testAddPlan() {
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
 
-		ProductDto p = addDummyProduct("dummy product");
-		PlanDto plan = addDummyPlan(p.getProductId(), 30);
+	@Test
+	public void addProductToPlanWithoutProductPrice() {
+		expectedEx.expect(PricingException.class);
+		ProductDto dto = addDummyProduct("dummy");
+		addDummyPlan(dto.getProductId(), "monthly");
+
+	}
+
+	@Test
+	public void testaddPlanWithoutProductId() {
+		expectedEx.expect(PricingException.class);
+		expectedEx.expectMessage("Product id must be > 0");
+		PlanDto plan = new PlanDto();
+		plan.setPlanType("Monthly");
+		service.addPlan(plan);
+	}
+
+	@Test
+	public void testAddPlanWithNonExistingProductId() {
+		expectedEx.expect(PricingException.class);
+		addDummyPlan(9999, "monthly");
+	}
+
+	@Test
+	public void testAddPlanWithInvalidPlanType() {
+		expectedEx.expect(PricingConflictsException.class);
+		ProductDto p = addDummyProduct("dummy");
+		addDummyPlan(p.getProductId(), "((#(&eo[we]]");
+	}
+
+	@Test
+	public void addPlanWithPrice() {
+		ProductDto p = addDummyProduct("dummy");
+		ProductPriceDto price = new ProductPriceDto();
+		price.setPrice(400);
+		price.setProductId(p.getProductId());
+		prodService.addProductPrice(price);
+
+		PlanDto plan = addDummyPlan(p.getProductId(), "monthly");
 
 		assertTrue(plan.getPlanId() > 0);
-		assertEquals(30, plan.getValidityDays());
-		assertEquals(p.getProductId(), plan.getProductId());
-
-	}
-
-	@Test(expected = PersistenceException.class)
-	public void testAddDuplicatePlansWithSameProductId() {
-		ProductDto p = addDummyProduct("dummy product");
-		addDummyPlan(p.getProductId(), 30);
-		addDummyPlan(p.getProductId(), 45);
-
-	}
-
-	@Test
-	public void testGetPlan() {
-		ProductDto p = addDummyProduct("dummy product");
-		PlanDto plan = addDummyPlan(p.getProductId(), 30);
-
-		plan = service.getPlan(plan.getPlanId());
-
-		assertNotNull(plan);
-		assertEquals(30, plan.getValidityDays());
 		assertEquals(p.getProductId(), plan.getProductId());
 	}
 
 	@Test
-	public void testDeletePlan() {
+	public void updatePlanWithInvalidPlanType() {
 
-		ProductDto p = addDummyProduct("dummy product");
-		PlanDto plan = addDummyPlan(p.getProductId(), 30);
+		expectedEx.expect(PricingConflictsException.class);
 
-		plan = service.deletePlan(plan.getPlanId());
+		ProductDto p = addDummyProduct("dummy");
+		ProductPriceDto price = new ProductPriceDto();
+		price.setPrice(400);
+		price.setProductId(p.getProductId());
+		prodService.addProductPrice(price);
 
-		assertNull(service.getPlan(plan.getPlanId()));
+		PlanDto plan = addDummyPlan(p.getProductId(), "monthly");
+		plan.setPlanType("(9i4jsidjflksdjfl03i4j8riw");
+		service.updatePlan(plan);
 
-	}
-
-	@Test
-	public void testUpdatePlan() {
-		ProductDto p = addDummyProduct("dummy product");
-		PlanDto plan = addDummyPlan(p.getProductId(), 30);
-		plan.setValidityDays(45);
-
-		plan = service.updatePlan(plan);
-
-		assertEquals(45, plan.getValidityDays());
 	}
 
 	public ProductDto addDummyProduct(String name) {
@@ -95,10 +110,10 @@ public class TestPlanManagerservice {
 		return prodService.addProduct(p);
 	}
 
-	public PlanDto addDummyPlan(int productId, int validityDays) {
+	public PlanDto addDummyPlan(int productId, String planType) {
 		PlanDto plan = new PlanDto();
 		plan.setProductId(productId);
-		plan.setValidityDays(validityDays);
+		plan.setPlanType(planType);
 		return service.addPlan(plan);
 	}
 

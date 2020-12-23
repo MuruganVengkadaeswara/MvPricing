@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.onebill.pricing.entities.Product;
 
+import javassist.NotFoundException;
+
 public interface ProductDao {
 
 	Product addProduct(Product product);
@@ -15,5 +17,7 @@ public interface ProductDao {
 	Product getProduct(int productId);
 
 	List<Product> getAllProducts();
+
+	Product getProductByName(String text);
 
 }

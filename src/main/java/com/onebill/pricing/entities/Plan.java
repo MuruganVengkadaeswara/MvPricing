@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Data
@@ -27,11 +28,15 @@ public class Plan {
 	private Product product;
 
 	@Column(name = "product_id", unique = true)
+	@NotNull
 	private int productId;
 
+	// @Column(name = "validity_days")
+	// @NotNull
+	// private int validityDays;
 
-	@Column(name = "validity_days")
-	@NotNull
-	private int validityDays;
+	@Column(name = "plan_type")
+	@Size(max = 20)
+	private String planType;
 
 }

@@ -52,6 +52,19 @@ public class ServiceController {
 		}
 	}
 
+	@GetMapping("/service")
+	public ResponseDto getService(String serviceName) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		ServiceDto dto = service.getServiceByName(serviceName);
+		if (dto != null) {
+			resp.setResponse(dto);
+			return resp;
+		} else {
+			throw new NotFoundException("Service with name " + serviceName + " is not found");
+
+		}
+	}
+
 	@PostMapping("/service")
 	public ResponseDto addService(@RequestBody ServiceDto dto) {
 		ResponseDto resp = new ResponseDto();
@@ -77,7 +90,7 @@ public class ServiceController {
 	}
 
 	@DeleteMapping("/service/{id}")
-	public ResponseDto deleteService(@PathVariable int id) {
+	public ResponseDto deleteService(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto serv = service.removeService(id);
 		if (serv != null) {

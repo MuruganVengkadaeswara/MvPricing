@@ -2,10 +2,11 @@ package com.onebill.pricing.servicetest;
 
 import static org.junit.Assert.*;
 
-import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -17,8 +18,12 @@ import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.exceptions.PricingConflictsException;
+import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.BundleManagerService;
 import com.onebill.pricing.services.ProductManagerService;
+
+import javassist.NotFoundException;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,67 +40,101 @@ public class TestBundleManagerService {
 	@Autowired
 	BundleManagerService bundleService;
 
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+
 	@Test
-	public void testAddBundle() {
-		BundleDto bundle = addDummyBundle("dummy bundle", 100);
-		assertTrue(bundle.getBundleId() > 0);
-		assertEquals("dummy bundle", bundle.getBundleName());
-		assertEquals(100, bundle.getValidityDays());
+	public void testAddBundleWithInvalidName() {
+		expectedEx.expect(PricingConflictsException.class);
+		addDummyBundle("376HNKE2137(", "monthly");
 	}
 
 	@Test
-	public void testUpdateBundle() {
-		BundleDto bundle = addDummyBundle("dummy bundle", 100);
-		bundle.setValidityDays(200);
-
-		bundle = bundleService.updateBundle(bundle);
-
-		assertEquals(200, bundle.getValidityDays());
+	public void testAddBundleWithInvalidType() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("The bundle Type must either be monthly,yearly,weekly or daily");
+		addDummyBundle("dummy bundle", "nvadzf");
 	}
 
 	@Test
-	public void testDeleteBundle() {
-		BundleDto bundle = addDummyBundle("dummy bundle", 100);
-
-		bundleService.removeBundel(bundle.getBundleId());
-
-		assertNull(bundleService.getBundle(bundle.getBundleId()));
+	public void testUpdateBundleWithInvalidName() {
+		expectedEx.expect(PricingConflictsException.class);
+		BundleDto dto = addDummyBundle("dummy bundle", "monthly");
+		dto.setBundleName("8**88**iehfhd023kudnfkjn");
+		bundleService.updateBundle(dto);
 	}
 
 	@Test
-	public void testGetBundleById() {
-		BundleDto bundle = addDummyBundle("dummy bundle", 100);
-
-		BundleDto b = bundleService.getBundle(bundle.getBundleId());
-
-		assertEquals("dummy bundle", b.getBundleName());
-		assertEquals(100, b.getValidityDays());
+	public void testGetBundleByName() throws NotFoundException {
+		addDummyBundle("dummy bundle", "monthly");
+		BundleDto dto = bundleService.getBundleByName("dummy bundle");
+		assertEquals("dummy bundle", dto.getBundleName());
+		assertTrue(dto.getBundleId() > 0);
+		assertEquals("monthly", dto.getBundleType());
 	}
 
 	@Test
-	public void testAddBundleProduct() {
-		BundleDto bundle = addDummyBundle("dummy bundle", 100);
+	public void testGetNonExistingBundleByName() throws NotFoundException {
+		expectedEx.expect(NotFoundException.class);
+		bundleService.getBundleByName("THIS IS A NON EXISTING BUNDLE NAME");
+	}
+
+	@Test
+	public void testGetBundleWithInvalidId() throws NotFoundException {
+		expectedEx.expect(PricingException.class);
+		bundleService.getBundle(-999);
+	}
+
+	@Test
+	public void testDeleteBundleWithInvalidId() throws NotFoundException {
+		expectedEx.expect(PricingException.class);
+		bundleService.removeBundel(-929);
+	}
+
+	@Test
+	public void testGetNonExistingBundleById() throws NotFoundException {
+		expectedEx.expect(NotFoundException.class);
+		bundleService.getBundle(99999);
+	}
+
+	@Test
+	public void testAddProductToBundlewithoutPrice() {
+
+		expectedEx.expect(PricingException.class);
+
+		expectedEx.expectMessage("The product to be added has no Price ! please update the price");
+
+		BundleDto bundle = addDummyBundle("dummy", "monthly");
 		ProductDto product = addDummyProduct("dummy product");
+		BundleProductDto bp = new BundleProductDto();
+		bp.setBundleId(bundle.getBundleId());
+		bp.setProductId(product.getProductId());
 
-		BundleProductDto bp = addDummyBundleProduct(bundle.getBundleId(), product.getProductId());
+		bundleService.addBundleProduct(bp);
 
-		assertTrue(bp.getBpId() > 0);
-		assertEquals(bundle.getBundleId(), bp.getBundleId());
-		assertEquals(product.getProductId(), bp.getProductId());
 	}
 
-	@Test(expected = PersistenceException.class)
-	public void testAddDuplicateProductToBundle() {
-		BundleDto bundle = addDummyBundle("dummy bundle", 100);
-		ProductDto product = addDummyProduct("dummy product");
-		addDummyBundleProduct(bundle.getBundleId(), product.getProductId());
-		addDummyBundleProduct(bundle.getBundleId(), product.getProductId());
+	@Test
+	public void updateBundleWithInvalidName() {
+		expectedEx.expect(PricingConflictsException.class);
+		BundleDto bundle = addDummyBundle("dummy", "monthly");
+		bundle.setBundleName("&&(&*UHFSNLDFSN*(WOI R");
+		bundleService.updateBundle(bundle);
 	}
 
-	public BundleDto addDummyBundle(String name, int validityDays) {
+	@Test
+	public void updateBundleWithInvalidType() {
+		expectedEx.expect(PricingConflictsException.class);
+		BundleDto bundle = addDummyBundle("dummy", "monthly");
+		bundle.setBundleType("jdjfdh09u4");
+		bundleService.updateBundle(bundle);
+
+	}
+
+	public BundleDto addDummyBundle(String name, String bundleType) {
 		BundleDto b = new BundleDto();
 		b.setBundleName(name);
-		b.setValidityDays(validityDays);
+		b.setBundleType(bundleType);
 		return bundleService.addBundle(b);
 	}
 

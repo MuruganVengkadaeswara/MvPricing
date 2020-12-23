@@ -66,8 +66,20 @@ public class ProductController {
 		}
 	}
 
+	@GetMapping("/product")
+	public ResponseDto getProduct(String productName) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		ProductDto dto = service.getProductByName(productName);
+		if (dto != null) {
+			resp.setResponse(dto);
+			return resp;
+		} else {
+			throw new NotFoundException("Product Not Found");
+		}
+	}
+
 	@DeleteMapping("/product/{id}")
-	public ResponseDto deleteProduct(@PathVariable int id) {
+	public ResponseDto deleteProduct(@PathVariable int id) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto = service.removeProductById(id);
 		if (dto != null) {
@@ -80,7 +92,7 @@ public class ProductController {
 	}
 
 	@PutMapping("/product")
-	public ResponseDto updateProduct(@RequestBody ProductDto dto) {
+	public ResponseDto updateProduct(@RequestBody ProductDto dto) throws NotFoundException {
 		ResponseDto resp = new ResponseDto();
 		ProductDto dto1 = service.updateProduct(dto);
 		if (dto1 != null) {

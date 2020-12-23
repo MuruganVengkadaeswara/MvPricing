@@ -14,13 +14,15 @@ public interface BundleManagerService {
 
 	public BundleDto updateBundle(BundleDto dto);
 
-	public BundleDto getBundle(int id);
+	public BundleDto getBundle(int id) throws NotFoundException;
 
-	public BundleDto removeBundel(int id);
+	public BundleDto removeBundel(int id) throws NotFoundException;
 
 	public List<BundleDto> getAllBundles() throws NotFoundException;
 
 	public List<ProductDto> getAllProductsOfbundle(int bundleId) throws NotFoundException;
+
+	public BundleDto getBundleByName(String text) throws NotFoundException;
 
 	// Bundle product ops
 
@@ -29,5 +31,7 @@ public interface BundleManagerService {
 	public BundleProductDto removeBundleProduct(int id);
 
 	public BundleProductDto getBundleProduct(int id);
+
+	public BundleProductDto removeProductOfBundle(int bundleId, int productId) throws NotFoundException;
 
 }

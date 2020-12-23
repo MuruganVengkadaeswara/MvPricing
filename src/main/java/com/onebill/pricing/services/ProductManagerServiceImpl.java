@@ -57,27 +57,31 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	@Override
 	public ProductDto addProduct(ProductDto dto) {
 
-		if (dto.getProductName().matches("[A-Za-z ]{2,25}")) {
-			Product product = mapper.map(dto, Product.class);
-			productdao.addProduct(product);
-			if (product != null) {
-				logger.info("Product Added" + product);
-				return mapper.map(product, ProductDto.class);
+		if (productdao.getProductByName(dto.getProductName()) == null) {
+			if (dto.getProductName().matches("[A-Za-z ]{2,25}")) {
+				Product product = mapper.map(dto, Product.class);
+				productdao.addProduct(product);
+				if (product != null) {
+					logger.info("Product Added" + product);
+					return mapper.map(product, ProductDto.class);
+				} else {
+					return null;
+				}
 			} else {
-				return null;
+				throw new PricingException(
+						"The Product Name must contain only letters,numbers,spaces and with in 2 and 25 characters");
 			}
 		} else {
-			throw new PricingException(
-					"The Product Name must contain only letters,numbers,spaces and with in 2 and 25 characters");
+			throw new PricingConflictsException("The product With name " + dto.getProductName() + " already exists");
 		}
 
 	}
 
 	@Override
-	public ProductDto removeProductById(int productId) throws ConstraintViolationException {
+	public ProductDto removeProductById(int productId) throws NotFoundException {
 
 		if (productId > 0) {
-//			 prodServDao.removeAllProductServicesByProductId(productId);
+			// prodServDao.removeAllProductServicesByProductId(productId);
 			bpDao.removeBundleProductByProductId(productId);
 			priceDao.removeProductPriceById(productId);
 			expDao.removeAddlPriceByProdId(productId);
@@ -86,7 +90,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			if (product != null) {
 				return mapper.map(product, ProductDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("The product with id " + productId + "is not found");
 			}
 		} else {
 			throw new PricingException("Product Id must be greater than 0");
@@ -95,15 +99,15 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public ProductDto updateProduct(ProductDto dto) {
+	public ProductDto updateProduct(ProductDto dto) throws NotFoundException {
 		if (dto.getProductId() > 0 && dto.getProductName().matches("[A-Za-z ]{2,25}")) {
 			Product product = mapper.map(dto, Product.class);
-			productdao.updateProduct(product);
+			product = productdao.updateProduct(product);
 			if (product != null) {
 				logger.info("Product Updated" + product);
 				return mapper.map(product, ProductDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("There is no product with id " + dto.getProductId());
 
 			}
 		} else {
@@ -114,14 +118,14 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public ProductDto getProduct(int productId) {
+	public ProductDto getProduct(int productId) throws NotFoundException {
 		if (productId > 0) {
 			Product product = productdao.getProduct(productId);
 			logger.info(product);
 			if (product != null) {
 				return mapper.map(product, ProductDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("Product with id " + productId + " doesnt exist");
 
 			}
 		} else {
@@ -267,13 +271,19 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Override
 	public ProductPriceDto addProductPrice(ProductPriceDto dto) {
+
 		ProductPrice price = mapper.map(dto, ProductPrice.class);
-		priceDao.addProductPrice(price);
-		if (price != null) {
-			return mapper.map(price, ProductPriceDto.class);
+		if (priceDao.getProductPrice(dto.getProductId()) == null) {
+			price = priceDao.addProductPrice(price);
+			if (price != null) {
+				return mapper.map(price, ProductPriceDto.class);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			throw new PricingConflictsException("The price to the product " + dto.getProductId() + " already exists");
 		}
+
 	}
 
 	@Override
@@ -342,6 +352,19 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			}
 		}
 		return dtolist;
+	}
+
+	@Override
+	public ProductDto getProductByName(String text) throws NotFoundException {
+
+		Product prod = productdao.getProductByName(text);
+		if (prod != null) {
+
+			return mapper.map(prod, ProductDto.class);
+		} else {
+			throw new NotFoundException("The product with name " + text + " is not found");
+		}
+
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.onebill.pricing.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import com.onebill.pricing.dto.PlanDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.entities.Plan;
 import com.onebill.pricing.entities.Product;
+import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 
 import javassist.NotFoundException;
@@ -27,14 +29,22 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 
 	@Override
 	public PlanDto addPlan(PlanDto dto) {
+
+		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
+
 		if (dto.getProductId() > 0) {
-			Plan plan = mapper.map(dto, Plan.class);
-			plan = plandao.addPlan(plan);
-			if (plan != null) {
-				return mapper.map(plan, PlanDto.class);
+			if (Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
+				Plan plan = mapper.map(dto, Plan.class);
+				plan = plandao.addPlan(plan);
+				if (plan != null) {
+					return mapper.map(plan, PlanDto.class);
+				} else {
+					return null;
+				}
 			} else {
-				return null;
+				throw new PricingConflictsException("Plan Type must either be monthly,yearly,weekly or daily");
 			}
+
 		} else {
 			throw new PricingException("Product id must be > 0");
 		}
@@ -43,13 +53,21 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 
 	@Override
 	public PlanDto updatePlan(PlanDto dto) {
-		if (dto.getPlanId() > 0 && dto.getValidityDays() > 0) {
-			Plan plan = mapper.map(dto, Plan.class);
-			plan = plandao.updatePlan(plan);
-			if (plan != null) {
-				return mapper.map(plan, PlanDto.class);
+
+		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
+
+		if (dto.getPlanId() > 0) {
+			if (Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
+
+				Plan plan = mapper.map(dto, Plan.class);
+				plan = plandao.updatePlan(plan);
+				if (plan != null) {
+					return mapper.map(plan, PlanDto.class);
+				} else {
+					return null;
+				}
 			} else {
-				return null;
+				throw new PricingConflictsException("Plan Type must either be monthly,yearly,weekly or daily");
 			}
 		} else {
 			throw new PricingException("The plan id and validity days must be greater than 0");

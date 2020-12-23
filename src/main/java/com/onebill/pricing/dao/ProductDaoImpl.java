@@ -17,6 +17,8 @@ import com.onebill.pricing.entities.ProductPrice;
 import com.onebill.pricing.entities.ProductService;
 import com.sun.istack.logging.Logger;
 
+import javassist.NotFoundException;
+
 @Repository
 public class ProductDaoImpl implements ProductDao {
 
@@ -68,8 +70,17 @@ public class ProductDaoImpl implements ProductDao {
 		List<Product> list;
 		TypedQuery<Product> query = manager.createQuery("FROM Product", Product.class);
 		list = query.getResultList();
+		return list;
+	}
+
+	@Override
+	public Product getProductByName(String text) {
+
+		TypedQuery<Product> query = manager.createQuery("FROM Product where productName= :name", Product.class);
+		query.setParameter("name", text);
+		List<Product> list = query.getResultList();
 		if (!list.isEmpty()) {
-			return list;
+			return list.get(0);
 		} else {
 			return null;
 		}

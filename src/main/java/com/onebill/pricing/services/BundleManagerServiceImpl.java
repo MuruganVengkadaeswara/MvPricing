@@ -1,7 +1,10 @@
 package com.onebill.pricing.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.persistence.TypedQuery;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,31 +37,52 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 
 	@Override
 	public BundleDto addBundle(BundleDto dto) {
-		if (dto.getBundleName().matches("[A-Za-z ]{2,25}")) {
-			Bundle bundle = mapper.map(dto, Bundle.class);
-			bundle = bundleDao.addBundle(bundle);
-			if (bundle != null) {
-				return mapper.map(bundle, BundleDto.class);
+
+		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
+
+		if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
+			if (dto.getBundleName().matches("[A-Za-z ]{2,25}")) {
+				if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
+					Bundle bundle = mapper.map(dto, Bundle.class);
+					bundle = bundleDao.addBundle(bundle);
+					if (bundle != null) {
+						return mapper.map(bundle, BundleDto.class);
+					} else {
+						return null;
+					}
+				} else {
+					throw new PricingConflictsException(
+							"The bundle Type must either be monthly,yearly,weekly or daily");
+				}
+
 			} else {
-				return null;
+				throw new PricingConflictsException(
+						"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
 			}
 		} else {
-			throw new PricingConflictsException(
-					"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
+			throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + " already exists");
 		}
 
 	}
 
 	@Override
 	public BundleDto updateBundle(BundleDto dto) {
+
+		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
+
 		if (dto.getBundleId() > 0) {
 			if (dto.getBundleName().matches("[A-Za-z ]{2,25}")) {
-				Bundle bundle = mapper.map(dto, Bundle.class);
-				bundle = bundleDao.updateBundle(bundle);
-				if (bundle != null) {
-					return mapper.map(bundle, BundleDto.class);
+				if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
+
+					Bundle bundle = mapper.map(dto, Bundle.class);
+					bundle = bundleDao.updateBundle(bundle);
+					if (bundle != null) {
+						return mapper.map(bundle, BundleDto.class);
+					} else {
+						return null;
+					}
 				} else {
-					return null;
+					throw new PricingConflictsException("Bundle Type must either be monthly,yearly,daily or weekly");
 				}
 			} else {
 				throw new PricingConflictsException(
@@ -71,14 +95,14 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	}
 
 	@Override
-	public BundleDto getBundle(int id) {
+	public BundleDto getBundle(int id) throws NotFoundException {
 		if (id > 0) {
 
 			Bundle bundle = bundleDao.getBundle(id);
 			if (bundle != null) {
 				return mapper.map(bundle, BundleDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("The bundle with Id " + id + "is not found");
 			}
 		} else {
 			throw new PricingException("Bundle Id must be greater than 0");
@@ -86,13 +110,13 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	}
 
 	@Override
-	public BundleDto removeBundel(int id) {
+	public BundleDto removeBundel(int id) throws NotFoundException {
 		if (id > 0) {
 			Bundle bundle = bundleDao.removeBundle(id);
 			if (bundle != null) {
 				return mapper.map(bundle, BundleDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("Bundle with Id " + id + " is not found");
 			}
 		} else {
 			throw new PricingException("Bundle Id must be greater than 0");
@@ -161,7 +185,7 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	}
 
 	@Override
-	public List<ProductDto> getAllProductsOfbundle(int bundleId)  {
+	public List<ProductDto> getAllProductsOfbundle(int bundleId) {
 
 		List<Product> list = bundleProdDao.getAllProductsOfbundle(bundleId);
 		List<ProductDto> dtolist = new ArrayList<>();
@@ -169,8 +193,33 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 			for (Product p : list) {
 				dtolist.add(mapper.map(p, ProductDto.class));
 			}
-		} 
+		}
 		return dtolist;
+	}
+
+	@Override
+	public BundleDto getBundleByName(String text) throws NotFoundException {
+
+		Bundle bundle = bundleDao.getBundleByName(text);
+		if (bundle != null) {
+			return mapper.map(bundle, BundleDto.class);
+		}
+
+		else {
+			throw new NotFoundException("Bundle with name " + text + " is not found");
+		}
+
+	}
+
+	@Override
+	public BundleProductDto removeProductOfBundle(int bundleId, int productId) throws NotFoundException {
+		BundleProduct bp = bundleProdDao.removeProductOfBundle(productId, bundleId);
+		if (bp != null) {
+			return mapper.map(bp, BundleProductDto.class);
+		} else {
+			throw new NotFoundException("The product with id " + productId + " is not found to this bundle");
+		}
+
 	}
 
 }

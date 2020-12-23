@@ -121,7 +121,6 @@ public class TestBundleProductDao {
 	public Bundle addDummyBundle(String name, int days) {
 		Bundle bundle = new Bundle();
 		bundle.setBundleName(name);
-		bundle.setValidityDays(days);
 		return bDao.addBundle(bundle);
 	}
 

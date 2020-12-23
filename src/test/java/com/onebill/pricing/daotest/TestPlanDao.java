@@ -59,7 +59,6 @@ public class TestPlanDao {
 
 		assertTrue(plan.getPlanId() > 0);
 		assertEquals(plan.getProductId(), p.getProductId());
-		assertEquals(30, plan.getValidityDays());
 
 	}
 
@@ -67,7 +66,7 @@ public class TestPlanDao {
 	public void testAddPlanWithoutProduct() {
 
 		Plan plan = new Plan();
-		plan.setValidityDays(45);
+		plan.setPlanType("monthly");
 		planDao.addPlan(plan);
 	}
 
@@ -79,11 +78,9 @@ public class TestPlanDao {
 
 		Plan plan = addDummyPlan(p.getProductId(), 30);
 
-		plan.setValidityDays(45);
 
 		Plan p1 = planDao.updatePlan(plan);
 
-		assertEquals(45, p1.getValidityDays());
 		assertEquals(plan.getPlanId(), p1.getPlanId());
 	}
 
@@ -98,7 +95,6 @@ public class TestPlanDao {
 		plan = planDao.removePlanbyId(plan.getPlanId());
 
 		assertEquals(plan.getProductId(), p.getProductId());
-		assertEquals(30, plan.getValidityDays());
 
 	}
 
@@ -113,7 +109,6 @@ public class TestPlanDao {
 		plan = planDao.getPlanById(plan.getPlanId());
 
 		assertEquals(plan.getProductId(), p.getProductId());
-		assertEquals(30, plan.getValidityDays());
 	}
 
 	@Test
@@ -163,7 +158,6 @@ public class TestPlanDao {
 	public Plan addDummyPlan(int productId, int days) {
 		Plan p = new Plan();
 		p.setProductId(productId);
-		p.setValidityDays(days);
 		return planDao.addPlan(p);
 	}
 

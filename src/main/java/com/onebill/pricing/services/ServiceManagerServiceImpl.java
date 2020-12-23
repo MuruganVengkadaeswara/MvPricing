@@ -16,6 +16,8 @@ import com.onebill.pricing.entities.Service;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 
+import javassist.NotFoundException;
+
 @org.springframework.stereotype.Service
 public class ServiceManagerServiceImpl implements ServiceManagerService {
 
@@ -32,30 +34,36 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 
 	@Override
 	public ServiceDto addService(ServiceDto dto) {
-		if (dto.getServiceName().matches("[A-Za-z ]{2,25}")) {
-			Service service = mapper.map(dto, Service.class);
-			servicedao.addService(service);
-			if (service != null) {
-				logger.info("Service added" + service);
-				return mapper.map(service, ServiceDto.class);
+
+		if (servicedao.getServiceByName(dto.getServiceName()) == null) {
+			if (dto.getServiceName().matches("[A-Za-z ]{2,25}")) {
+				Service service = mapper.map(dto, Service.class);
+				servicedao.addService(service);
+				if (service != null) {
+					logger.info("Service added" + service);
+					return mapper.map(service, ServiceDto.class);
+				} else {
+					return null;
+				}
 			} else {
-				return null;
+				throw new PricingConflictsException(
+						"The service Name Must contain be only numbers,letters and spaces and must be within 2 and 25 characters");
 			}
 		} else {
-			throw new PricingConflictsException(
-					"The service Name Must contain be only numbers,letters and spaces and must be within 2 and 25 characters");
+			throw new PricingConflictsException("The service with name " + dto.getServiceName() + " already exists");
 		}
+
 	}
 
 	@Override
-	public ServiceDto removeService(int serviceId) {
+	public ServiceDto removeService(int serviceId) throws NotFoundException {
 		if (serviceId > 0) {
 			Service service = servicedao.removeService(serviceId);
 			if (service != null) {
 				logger.info("Service deleted" + service);
 				return mapper.map(service, ServiceDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("The service With id " + serviceId + " is not found");
 			}
 		} else {
 			throw new PricingException("Service Id must be greater than 0");
@@ -76,13 +84,14 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 				return null;
 			}
 		} else {
-			throw new PricingException("the service id must be greater than 0 and name must have spaces and numbers");
+			throw new PricingException(
+					"the service id must be greater than 0 and name must contain only spaces and numbers and be within 25 characters");
 		}
 
 	}
 
 	@Override
-	public ServiceDto getService(int serviceId) {
+	public ServiceDto getService(int serviceId) throws NotFoundException {
 
 		if (serviceId > 0) {
 			Service service = servicedao.getService(serviceId);
@@ -90,7 +99,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 				logger.info("service returned" + service);
 				return mapper.map(service, ServiceDto.class);
 			} else {
-				return null;
+				throw new NotFoundException("The service With id " + serviceId + " is not found");
 			}
 		} else {
 			throw new PricingException("The service id must be greater than 0");
@@ -101,7 +110,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 	@Override
 	public List<ServiceDto> getAllServices() {
 		List<Service> list = servicedao.getAllServices();
-		List<ServiceDto> dtolist = new ArrayList<ServiceDto>();
+		List<ServiceDto> dtolist = new ArrayList<>();
 		if (!list.isEmpty()) {
 			for (Service s : list) {
 				dtolist.add(mapper.map(s, ServiceDto.class));
@@ -129,4 +138,13 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 
 	}
 
+	@Override
+	public ServiceDto getServiceByName(String text) throws NotFoundException {
+		Service service = servicedao.getServiceByName(text);
+		if (service != null) {
+			return mapper.map(service, ServiceDto.class);
+		} else {
+			throw new NotFoundException("Service With Name " + text + " doesn't exist");
+		}
+	}
 }
