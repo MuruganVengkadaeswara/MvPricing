@@ -77,7 +77,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	public ProductDto removeProductById(int productId) throws ConstraintViolationException {
 
 		if (productId > 0) {
-			// prodServDao.removeAllProductServicesByProductId(productId);
+//			 prodServDao.removeAllProductServicesByProductId(productId);
 			bpDao.removeBundleProductByProductId(productId);
 			priceDao.removeProductPriceById(productId);
 			expDao.removeAddlPriceByProdId(productId);

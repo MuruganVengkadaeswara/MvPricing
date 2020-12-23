@@ -27,7 +27,7 @@ public class BundleProductDaoImpl implements BundleProductDao {
 
 		TypedQuery<ProductPrice> query = manager.createQuery("FROM ProductPrice where productId= :id",
 				ProductPrice.class);
-		query.setParameter("id", bundleProduct.getProductId());
+		query.setParameter("id", bundleProduct.getBundle().getBundleId());
 		if (!query.getResultList().isEmpty()) {
 			manager.persist(bundleProduct);
 			return bundleProduct;

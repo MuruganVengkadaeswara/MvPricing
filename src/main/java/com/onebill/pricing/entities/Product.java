@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -43,7 +44,7 @@ public class Product {
 	@OneToOne(mappedBy = "product", orphanRemoval = true)
 	private ProductPrice price;
 
-	// @LazyCollection(LazyCollectionOption.FALSE)
+	 @LazyCollection(LazyCollectionOption.FALSE)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true, cascade = CascadeType.REMOVE)
 	private List<ProductService> services;
 
