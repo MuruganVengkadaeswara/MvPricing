@@ -6,18 +6,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
-import com.onebill.pricing.entities.AdditionalPrice;
 import com.onebill.pricing.entities.Product;
-import com.onebill.pricing.entities.ProductPrice;
-import com.onebill.pricing.entities.ProductService;
 import com.sun.istack.logging.Logger;
-
-import javassist.NotFoundException;
 
 @Repository
 public class ProductDaoImpl implements ProductDao {
@@ -84,6 +78,14 @@ public class ProductDaoImpl implements ProductDao {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Product> searchProductsByName(String text) {
+		TypedQuery<Product> query = manager.createQuery("FROM Product where productName like :text", Product.class);
+		query.setParameter("text", "%" + text + "%");
+		return query.getResultList();
+
 	}
 
 }

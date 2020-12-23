@@ -28,6 +28,8 @@ public interface ProductManagerService {
 
 	ProductDto getProductByName(String text) throws NotFoundException;
 
+	List<ProductDto> searchProductByName(String text) throws NotFoundException;
+
 	// product Service crud
 
 	ProductServiceDto addProductService(ProductServiceDto dto);

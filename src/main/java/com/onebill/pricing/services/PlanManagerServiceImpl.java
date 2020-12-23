@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.onebill.pricing.dao.PlanDao;
+import com.onebill.pricing.dao.ProductDao;
+import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.PlanDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.entities.Plan;
@@ -25,26 +27,36 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 	PlanDao plandao;
 
 	@Autowired
+	ProductDao prodDao;
+
+	@Autowired
+	ProductServiceDao prodServDao;
+
+	@Autowired
 	ModelMapper mapper;
 
 	@Override
 	public PlanDto addPlan(PlanDto dto) {
 
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
-
 		if (dto.getProductId() > 0) {
-			if (Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
-				Plan plan = mapper.map(dto, Plan.class);
-				plan = plandao.addPlan(plan);
-				if (plan != null) {
-					return mapper.map(plan, PlanDto.class);
+			if (!prodServDao.getAllServicesOfProduct(dto.getProductId()).isEmpty()) {
+				if (Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
+					Plan plan = mapper.map(dto, Plan.class);
+					plan = plandao.addPlan(plan);
+					if (plan != null) {
+						return mapper.map(plan, PlanDto.class);
+					} else {
+						return null;
+					}
 				} else {
-					return null;
+					throw new PricingConflictsException("Plan Type must either be monthly,yearly,weekly or daily");
 				}
-			} else {
-				throw new PricingConflictsException("Plan Type must either be monthly,yearly,weekly or daily");
-			}
 
+			} else {
+				throw new PricingConflictsException(
+						"The product to be added has no services in it ! please add atleast one service");
+			}
 		} else {
 			throw new PricingException("Product id must be > 0");
 		}

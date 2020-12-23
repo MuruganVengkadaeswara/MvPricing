@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import org.jboss.logging.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.onebill.pricing.entities.BundleProduct;
@@ -20,6 +21,8 @@ public class BundleProductDaoImpl implements BundleProductDao {
 
 	@PersistenceContext
 	EntityManager manager;
+
+	Logger logger = Logger.getLogger(BundleProductDaoImpl.class);
 
 	@Override
 	@Transactional
@@ -39,6 +42,7 @@ public class BundleProductDaoImpl implements BundleProductDao {
 	}
 
 	@Override
+	@Transactional
 	public BundleProduct removeBundleProduct(int id) {
 		BundleProduct bp = manager.find(BundleProduct.class, id);
 		if (bp != null) {
@@ -56,17 +60,20 @@ public class BundleProductDaoImpl implements BundleProductDao {
 	@Override
 	@Transactional
 	public List<BundleProduct> removeBundleProductByProductId(int id) {
-		TypedQuery<BundleProduct> query = manager.createQuery("FROM BundleProduct where productId= :id",
-				BundleProduct.class);
+		TypedQuery<Integer> query = manager.createQuery("select bpId FROM BundleProduct where productId= :id",
+				Integer.class);
 		query.setParameter("id", id);
-		List<BundleProduct> list = query.getResultList();
+		List<Integer> list = query.getResultList();
+		logger.info(list.toString());
+		List<BundleProduct> blist = new ArrayList<>();
 		if (!list.isEmpty()) {
-			for (BundleProduct bp : list) {
-				manager.remove(bp);
+			for (int e : list) {
+				blist.add(manager.find(BundleProduct.class, e));
+				manager.remove(manager.find(BundleProduct.class, e));
 			}
 		}
 
-		return list;
+		return blist;
 	}
 
 	@Override
@@ -86,18 +93,23 @@ public class BundleProductDaoImpl implements BundleProductDao {
 	}
 
 	@Override
-	public BundleProduct removeProductOfBundle(int productId, int BundleId) {
+	@Transactional
+	public BundleProduct removeProductOfBundle(int productId, int bundleId) {
 
-		TypedQuery<BundleProduct> query = manager
-				.createQuery("FROM BundleProduct where bundleId= :bid and productId= :pid", BundleProduct.class);
+		TypedQuery<Integer> query = manager
+				.createQuery("select bpId FROM BundleProduct where bundleId= :bid and productId= :pid", Integer.class);
 		query.setParameter("pid", productId);
-		query.setParameter("bid", BundleId);
-		List<BundleProduct> list = query.getResultList();
-		if (!list.isEmpty()) {
-			manager.remove(list.get(0));
-			return list.get(0);
+		query.setParameter("bid", bundleId);
+		int id = query.getResultList().get(0);
+		logger.info(Integer.toString(id));
+		BundleProduct p = manager.find(BundleProduct.class, id);
+		if (p != null) {
+			manager.remove(manager.find(BundleProduct.class, id));
+			return p;
+		} else {
+			return null;
 		}
-		return null;
+
 	}
 
 }

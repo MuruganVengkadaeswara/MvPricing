@@ -1,6 +1,7 @@
 package com.onebill.pricing.servicetest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.transaction.Transactional;
@@ -18,9 +19,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductServiceDto;
+import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.ProductManagerService;
+import com.onebill.pricing.services.ServiceManagerService;
 
 import javassist.NotFoundException;
 
@@ -35,6 +39,9 @@ public class TestProductManagerService {
 
 	@Autowired
 	ProductManagerService service;
+
+	@Autowired
+	ServiceManagerService smservice;
 
 	Logger logger = Logger.getLogger(TestProductManagerService.class);
 
@@ -118,6 +125,19 @@ public class TestProductManagerService {
 		service.updateProduct(dto);
 	}
 
+	@Test
+	public void testDeleteProductWithServices() throws NotFoundException {
+		expectedEx.expect(NotFoundException.class);
+		ProductDto p = addDummyProduct("dummy product");
+		ServiceDto s = addDummyService("dummy service");
+		logger.info(p);
+		ProductServiceDto ps = addDummyProdService(p.getProductId(), s.getServiceId());
+		service.removeProductById(p.getProductId());
+		assertNull(service.getProductService(ps.getPsId()));
+		assertNull(service.getProduct(p.getProductId()));
+
+	}
+
 	// @Test
 	// public void testAddProduct() {
 	// ProductDto p = addDummyProduct("dummy");
@@ -185,6 +205,22 @@ public class TestProductManagerService {
 	// assertEquals(300, price.getPrice(), 0);
 	//
 	// }
+
+	public ServiceDto addDummyService(String name) {
+		ServiceDto s = new ServiceDto();
+		s.setServiceName(name);
+		return smservice.addService(s);
+	}
+
+	public ProductServiceDto addDummyProdService(int productId, int serviceId) {
+		ProductServiceDto ps = new ProductServiceDto();
+		ps.setProductId(productId);
+		ps.setServiceId(serviceId);
+		ps.setFreeUnits(100);
+		ps.setUnitType("mb");
+		ps.setServicePrice(0.5);
+		return service.addProductService(ps);
+	}
 
 	public ProductDto addDummyProduct(String name) {
 		ProductDto p = new ProductDto();

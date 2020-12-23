@@ -41,6 +41,18 @@ public class ProductController {
 		}
 	}
 
+	@GetMapping("/product")
+	public ResponseDto searchProductByName(String name) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		List<ProductDto> list = service.searchProductByName(name);
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
+			return resp;
+		} else {
+			throw new NotFoundException("There Are no Products");
+		}
+	}
+
 	@PostMapping("/product")
 	public ResponseDto addProduct(@RequestBody ProductDto dto) {
 		ResponseDto resp = new ResponseDto();
@@ -66,17 +78,17 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/product")
-	public ResponseDto getProduct(String productName) throws NotFoundException {
-		ResponseDto resp = new ResponseDto();
-		ProductDto dto = service.getProductByName(productName);
-		if (dto != null) {
-			resp.setResponse(dto);
-			return resp;
-		} else {
-			throw new NotFoundException("Product Not Found");
-		}
-	}
+//	@GetMapping("/product")
+//	public ResponseDto getProduct(String productName) throws NotFoundException {
+//		ResponseDto resp = new ResponseDto();
+//		ProductDto dto = service.getProductByName(productName);
+//		if (dto != null) {
+//			resp.setResponse(dto);
+//			return resp;
+//		} else {
+//			throw new NotFoundException("Product Not Found");
+//		}
+//	}
 
 	@DeleteMapping("/product/{id}")
 	public ResponseDto deleteProduct(@PathVariable int id) throws NotFoundException {

@@ -20,4 +20,6 @@ public interface ProductDao {
 
 	Product getProductByName(String text);
 
+	List<Product> searchProductsByName(String text);
+
 }

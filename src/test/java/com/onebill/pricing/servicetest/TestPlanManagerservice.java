@@ -19,11 +19,11 @@ import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dto.PlanDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductPriceDto;
-import com.onebill.pricing.entities.Plan;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.PlanManagerService;
 import com.onebill.pricing.services.ProductManagerService;
+import com.onebill.pricing.testconfig.PricingAppTestConfiguration;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,7 +45,7 @@ public class TestPlanManagerservice {
 
 	@Test
 	public void addProductToPlanWithoutProductPrice() {
-		expectedEx.expect(PricingException.class);
+		expectedEx.expect(PricingConflictsException.class);
 		ProductDto dto = addDummyProduct("dummy");
 		addDummyPlan(dto.getProductId(), "monthly");
 
@@ -62,7 +62,7 @@ public class TestPlanManagerservice {
 
 	@Test
 	public void testAddPlanWithNonExistingProductId() {
-		expectedEx.expect(PricingException.class);
+		expectedEx.expect(PricingConflictsException.class);
 		addDummyPlan(9999, "monthly");
 	}
 
@@ -75,6 +75,7 @@ public class TestPlanManagerservice {
 
 	@Test
 	public void addPlanWithPrice() {
+		expectedEx.expect(PricingConflictsException.class);
 		ProductDto p = addDummyProduct("dummy");
 		ProductPriceDto price = new ProductPriceDto();
 		price.setPrice(400);

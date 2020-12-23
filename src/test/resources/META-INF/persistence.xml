@@ -4,32 +4,34 @@
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 	version="2.1">
 
-	<persistence-unit name="priceManagement">
+	<persistence-unit name="priceManagementTest">
 
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
-				value="org.h2.Driver" />
+				value="org.hsqldb.jdbc.JDBCDriver" />
 
 			<property name="javax.persistence.jdbc.url"
-				value="jdbc:h2:mem:testdb" />
+				value="jdbc:hsqldb:mem:priceDb" />
 
 			<property name="javax.persistence.jdbc.user" value="sa" />
 
-			<property name="javax.persistence.jdbc.password"
-				value="" />
+			<property name="javax.persistence.jdbc.password" value="" />
+
+			<property name="hibernate.archive.autodetection"
+				value="class, hbm" />
 
 			<property name="hibernate.show_sql" value="true" />
 
 			<property name="hibernate.dialect"
-				value="org.hibernate.dialect.H2Dialect" />
+				value="org.hibernate.dialect.HSQLDialect" />
 
 			<property name="hibernate.implicit_naming_strategy"
 				value="jpa" />
 
-			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.hbm2ddl.auto" value="create" />
 
 		</properties>
 

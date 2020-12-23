@@ -46,7 +46,7 @@ public class Product {
 	private ProductPrice price;
 
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true, cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "product", orphanRemoval = true)
 	private List<ProductService> services;
 
 	@OneToMany(mappedBy = "product", orphanRemoval = true)

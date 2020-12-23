@@ -3,11 +3,8 @@ package com.onebill.pricing.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
-
 import org.jboss.logging.Logger;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,7 +78,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	public ProductDto removeProductById(int productId) throws NotFoundException {
 
 		if (productId > 0) {
-			// prodServDao.removeAllProductServicesByProductId(productId);
+			prodServDao.removeAllProductServicesByProductId(productId);
 			bpDao.removeBundleProductByProductId(productId);
 			priceDao.removeProductPriceById(productId);
 			expDao.removeAddlPriceByProdId(productId);
@@ -90,7 +87,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			if (product != null) {
 				return mapper.map(product, ProductDto.class);
 			} else {
-				throw new NotFoundException("The product with id " + productId + "is not found");
+				throw new NotFoundException("The product with id " + productId + " is not found");
 			}
 		} else {
 			throw new PricingException("Product Id must be greater than 0");
@@ -359,12 +356,25 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 		Product prod = productdao.getProductByName(text);
 		if (prod != null) {
-
 			return mapper.map(prod, ProductDto.class);
 		} else {
 			throw new NotFoundException("The product with name " + text + " is not found");
 		}
 
+	}
+
+	@Override
+	public List<ProductDto> searchProductByName(String text) throws NotFoundException {
+		List<Product> list = productdao.searchProductsByName(text);
+		List<ProductDto> dtolist = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (Product p : list) {
+				dtolist.add(mapper.map(p, ProductDto.class));
+			}
+			return dtolist;
+		} else {
+			throw new NotFoundException("There are no Products like " + text + " ");
+		}
 	}
 
 }
