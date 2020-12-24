@@ -17,6 +17,8 @@ public interface PlanDao {
 
 	Plan getPlanById(int planId);
 
+	int getProductIdByPlanId(int planId);
+
 	List<Plan> getAllPlans();
 
 	List<Product> getAllProductsOfPlan(int planId) throws NotFoundException;

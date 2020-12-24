@@ -11,27 +11,25 @@
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
-				value="org.hsqldb.jdbc.JDBCDriver" />
+				value="com.mysql.cj.jdbc.Driver" />
 
 			<property name="javax.persistence.jdbc.url"
-				value="jdbc:hsqldb:mem:priceDb" />
+				value="jdbc:mysql://localhost:3306/price_db_test" />
 
-			<property name="javax.persistence.jdbc.user" value="sa" />
+			<property name="javax.persistence.jdbc.user" value="onebill" />
 
-			<property name="javax.persistence.jdbc.password" value="" />
-
-			<property name="hibernate.archive.autodetection"
-				value="class, hbm" />
+			<property name="javax.persistence.jdbc.password"
+				value="onebill" />
 
 			<property name="hibernate.show_sql" value="true" />
 
 			<property name="hibernate.dialect"
-				value="org.hibernate.dialect.HSQLDialect" />
+				value="org.hibernate.dialect.MySQL5InnoDBDialect" />
 
 			<property name="hibernate.implicit_naming_strategy"
 				value="jpa" />
 
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 
 		</properties>
 

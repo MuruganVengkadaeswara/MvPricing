@@ -17,7 +17,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "product_services", uniqueConstraints = @UniqueConstraint(columnNames = { "product_id", "service_id" }))
+@Table(name = "product_services", uniqueConstraints = @UniqueConstraint(columnNames = { "product_id", "service_name" }))
 public class ProductService {
 
 	@Id
@@ -33,13 +33,19 @@ public class ProductService {
 	@NotNull
 	private int productId;
 
-	@ManyToOne
-	@JoinColumn(name = "service_id", referencedColumnName = "service_id", insertable = false, updatable = false)
-	private Service service;
+	// @ManyToOne
+	// @JoinColumn(name = "service_id", referencedColumnName = "service_id",
+	// insertable = false, updatable = false)
+	// private Service service;
+	//
+	// @Column(name = "service_id")
+	// @NotNull
+	// private int serviceId;
 
-	@Column(name = "service_id")
+	@Column(name = "service_name")
 	@NotNull
-	private int serviceId;
+	@Size(max = 25)
+	private String serviceName;
 
 	@NotNull
 	@Column(name = "service_price", columnDefinition = "Decimal(10,2)")

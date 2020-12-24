@@ -69,7 +69,12 @@ public class TestServiceManager {
 		serv.setServiceName("DKsioi04-924-492???pp[p34423");
 		service.updateService(serv);
 	}
-
+	@Test
+	public void testUpdateServiceWithNullInput() {
+		expectedEx.expect(PricingException.class);
+		ServiceDto serv = null;
+		service.updateService(serv);
+	}
 	@Test
 	public void testAddService() {
 		ServiceDto serv = addDummyService("dummy");

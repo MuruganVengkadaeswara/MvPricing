@@ -19,6 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.exceptions.PricingConflictsException;
@@ -52,27 +53,50 @@ public class TestProductManagerService {
 	public void addDuplicateProduct() {
 		expectedEx.expect(PricingConflictsException.class);
 		expectedEx.expectMessage("The product With name dummy already exists");
-		addDummyProduct("dummy");
-		addDummyProduct("dummy");
+		addDummyProduct("dummy",400);
+		addDummyProduct("dummy",400);
+
+	}
+
+	@Test
+	public void testAddProductWithoutPrice() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("The product price must be greater than 0");
+		addDummyProduct("Dummy",400);
 
 	}
 
 	@Test
 	public void addProductWithInvalidName() {
-		expectedEx.expect(PricingException.class);
-		addDummyProduct("$^kjdhfgksjdb89(*^&U&((");
+		expectedEx.expect(PricingConflictsException.class);
+		addDummyProduct("$^kjdhfgksjdb89(*^&U&((",400);
+	}
+
+	@Test
+	public void testAddProductWithPrice() {
+		ProductDto p = new ProductDto();
+		p.setProductName("hello");
+
+		ProductPriceDto price = new ProductPriceDto();
+		price.setPrice(499.99);
+
+		p.setPrice(price);
+
+		ProductDto p1 = service.addProduct(p);
+		assertEquals(499.99, p.getPrice().getPrice(), 0);
+
 	}
 
 	@Test
 	public void addProductWithMoreThan25Chars() {
 		expectedEx.expect(PricingException.class);
-		addDummyProduct("sdjfhaskjdhfkjahsdfjhjksahdfkjhasjdfhkjsahdkfjhjsadfhkjsfkjsh");
+		addDummyProduct("sdjfhaskjdhfkjahsdfjhjksahdfkjhasjdfhkjsahdkfjhjsadfhkjsfkjsh",400);
 	}
 
 	@Test
 	public void addProductWithLessThan2Chars() {
 		expectedEx.expect(PricingException.class);
-		addDummyProduct("s");
+		addDummyProduct("s",400);
 	}
 
 	@Test
@@ -96,7 +120,7 @@ public class TestProductManagerService {
 
 	@Test
 	public void testGetProductByName() throws NotFoundException {
-		addDummyProduct("dummy");
+		addDummyProduct("dummy",400);
 		ProductDto dto = service.getProductByName("dummy");
 		assertEquals("dummy", dto.getProductName());
 		assertTrue(dto.getProductId() > 0);
@@ -111,7 +135,7 @@ public class TestProductManagerService {
 	@Test
 	public void testUpdateProductWithInvalidName() throws NotFoundException {
 		expectedEx.expect(PricingConflictsException.class);
-		ProductDto dto = addDummyProduct("Dummy");
+		ProductDto dto = addDummyProduct("Dummy",400);
 		dto.setProductName("**03984%%##@@#$!!22342rsvd");
 		service.updateProduct(dto);
 	}
@@ -128,7 +152,7 @@ public class TestProductManagerService {
 	@Test
 	public void testDeleteProductWithServices() throws NotFoundException {
 		expectedEx.expect(NotFoundException.class);
-		ProductDto p = addDummyProduct("dummy product");
+		ProductDto p = addDummyProduct("dummy product",400);
 		ServiceDto s = addDummyService("dummy service");
 		logger.info(p);
 		ProductServiceDto ps = addDummyProdService(p.getProductId(), s.getServiceId());
@@ -215,16 +239,19 @@ public class TestProductManagerService {
 	public ProductServiceDto addDummyProdService(int productId, int serviceId) {
 		ProductServiceDto ps = new ProductServiceDto();
 		ps.setProductId(productId);
-		ps.setServiceId(serviceId);
+		// ps.setServiceId(serviceId);
 		ps.setFreeUnits(100);
 		ps.setUnitType("mb");
 		ps.setServicePrice(0.5);
 		return service.addProductService(ps);
 	}
 
-	public ProductDto addDummyProduct(String name) {
+	public ProductDto addDummyProduct(String name, double price) {
 		ProductDto p = new ProductDto();
+		ProductPriceDto pr = new ProductPriceDto();
+		pr.setPrice(price);
 		p.setProductName(name);
+		p.setPrice(pr);
 		return service.addProduct(p);
 	}
 

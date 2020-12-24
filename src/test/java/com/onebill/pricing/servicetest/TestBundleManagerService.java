@@ -18,10 +18,13 @@ import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductServiceDto;
+import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.BundleManagerService;
 import com.onebill.pricing.services.ProductManagerService;
+import com.onebill.pricing.services.ServiceManagerService;
 
 import javassist.NotFoundException;
 
@@ -39,6 +42,9 @@ public class TestBundleManagerService {
 
 	@Autowired
 	BundleManagerService bundleService;
+
+	@Autowired
+	ServiceManagerService smService;
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -98,6 +104,21 @@ public class TestBundleManagerService {
 	}
 
 	@Test
+	public void testAddProductToBundleWithoutService() {
+		expectedEx.expect(PricingConflictsException.class);
+
+		expectedEx.expectMessage("The product to be added has no service please update the services");
+
+		BundleDto bundle = addDummyBundle("dummy", "monthly");
+		ProductDto product = addDummyProduct("dummy product");
+		BundleProductDto bp = new BundleProductDto();
+		bp.setBundleId(bundle.getBundleId());
+		bp.setProductId(product.getProductId());
+
+		bundleService.addBundleProduct(bp);
+	}
+
+	@Test
 	public void testAddProductToBundlewithoutPrice() {
 
 		expectedEx.expect(PricingException.class);
@@ -106,6 +127,7 @@ public class TestBundleManagerService {
 
 		BundleDto bundle = addDummyBundle("dummy", "monthly");
 		ProductDto product = addDummyProduct("dummy product");
+		addDummyProductService(product.getProductId());
 		BundleProductDto bp = new BundleProductDto();
 		bp.setBundleId(bundle.getBundleId());
 		bp.setProductId(product.getProductId());
@@ -142,6 +164,19 @@ public class TestBundleManagerService {
 		ProductDto p = new ProductDto();
 		p.setProductName(name);
 		return prodService.addProduct(p);
+	}
+
+	public ProductServiceDto addDummyProductService(int productId) {
+		ServiceDto s = new ServiceDto();
+		s.setServiceName("dummy");
+		s = smService.addService(s);
+		ProductServiceDto ps = new ProductServiceDto();
+		ps.setProductId(productId);
+//		ps.setServiceId(s.getServiceId());
+		ps.setFreeUnits(100);
+		ps.setUnitType("mb");
+		ps.setServicePrice(49.99);
+		return prodService.addProductService(ps);
 	}
 
 	public BundleProductDto addDummyBundleProduct(int bundleId, int productId) {

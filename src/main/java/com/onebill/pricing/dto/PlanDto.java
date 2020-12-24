@@ -9,7 +9,6 @@ public class PlanDto {
 
 	private ProductDto product;
 
-	// private int validityDays;
 
 	private int productId;
 

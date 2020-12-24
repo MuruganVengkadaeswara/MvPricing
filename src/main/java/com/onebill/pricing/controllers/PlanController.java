@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.onebill.pricing.dto.PlanDto;
 import com.onebill.pricing.dto.ProductDto;
+import com.onebill.pricing.dto.ProductPriceDto;
+import com.onebill.pricing.dto.ProductServiceDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.PlanManagerService;
+import com.onebill.pricing.services.ProductManagerService;
 
 import javassist.NotFoundException;
 
@@ -24,6 +27,9 @@ public class PlanController {
 
 	@Autowired
 	PlanManagerService service;
+
+	@Autowired
+	ProductManagerService psService;
 
 	@PostMapping("/plan")
 	public ResponseDto addPlan(@RequestBody PlanDto dto) {
@@ -71,6 +77,30 @@ public class PlanController {
 			return resp;
 		} else {
 			throw new NotFoundException("The products to plan with " + id + " are not found");
+		}
+	}
+
+	@GetMapping("/plan/{id}/product/price")
+	public ResponseDto getPlanPrice(@PathVariable int id) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		ProductPriceDto price = psService.getProuctPriceById(service.getProductIdByPlanId(id));
+		if (price != null) {
+			resp.setResponse(price);
+			return resp;
+		} else {
+			throw new NotFoundException("The products to plan with " + id + " are not found");
+		}
+	}
+
+	@GetMapping("/plan/{id}/product/services")
+	public ResponseDto getPlanServices(@PathVariable int id) throws NotFoundException {
+		ResponseDto resp = new ResponseDto();
+		List<ProductServiceDto> list = psService.getAllProductServiceByProdId(service.getProductIdByPlanId(id));
+		if (!list.isEmpty()) {
+			resp.setResponse(list);
+			return resp;
+		} else {
+			throw new NotFoundException("The Services to plan with " + id + " are not found");
 		}
 	}
 

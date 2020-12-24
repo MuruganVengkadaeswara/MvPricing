@@ -92,4 +92,14 @@ public class PlanDaoImpl implements PlanDao {
 		}
 	}
 
+	@Override
+	public int getProductIdByPlanId(int planId) {
+		if (manager.find(Plan.class, planId) != null) {
+			return manager.find(Plan.class, planId).getProductId();
+
+		} else {
+			return 0;
+		}
+	}
+
 }

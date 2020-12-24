@@ -56,7 +56,7 @@ public class TestProductServiceDao {
 
 		assertTrue(ps.getPsId() > 0);
 		assertEquals(product.getProductId(), ps.getProductId());
-		assertEquals(service.getServiceId(), ps.getServiceId());
+//		assertEquals(service.getServiceId(), ps.getServiceId());
 		assertEquals(0.5, ps.getServicePrice(), 0);
 		assertEquals(400, ps.getFreeUnits());
 
@@ -137,7 +137,7 @@ public class TestProductServiceDao {
 			String unitType) {
 		ProductService ps = new ProductService();
 		ps.setProductId(productId);
-		ps.setServiceId(serviceId);
+//		ps.setServiceId(serviceId);
 		ps.setServicePrice(price);
 		ps.setFreeUnits(freeUnits);
 		ps.setUnitType(unitType);

@@ -17,6 +17,8 @@ public interface PlanManagerService {
 
 	PlanDto getPlan(int planId);
 
+	int getProductIdByPlanId(int planId) throws NotFoundException;
+
 	List<PlanDto> getAllPlans();
 
 	List<ProductDto> getAllProductsOfPlan(int planId) throws NotFoundException;

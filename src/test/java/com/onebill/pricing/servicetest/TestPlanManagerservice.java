@@ -23,7 +23,6 @@ import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.PlanManagerService;
 import com.onebill.pricing.services.ProductManagerService;
-import com.onebill.pricing.testconfig.PricingAppTestConfiguration;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,6 +41,20 @@ public class TestPlanManagerservice {
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
+
+	@Test
+	public void addPlanWithoutProduct() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("Product Must not be null");
+		PlanDto dto = new PlanDto();
+		dto.setPlanType("Monthly");
+		service.addPlan(dto);
+	}
+	
+	@Test
+	public void addPlanWithProduct() {
+		
+	}
 
 	@Test
 	public void addProductToPlanWithoutProductPrice() {

@@ -25,6 +25,7 @@ public class ProductDaoImpl implements ProductDao {
 	@Transactional
 	public Product addProduct(Product product) {
 		manager.persist(product);
+		manager.flush();
 		return product;
 	}
 

@@ -1,6 +1,7 @@
 package com.onebill.pricing.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.jboss.logging.Logger;
@@ -51,25 +52,88 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	Logger logger = Logger.getLogger(ProductManagerServiceImpl.class);
 
+	// @Override
+	// public ProductDto addProduct(ProductDto dto) {
+	//
+	// if (productdao.getProductByName(dto.getProductName()) == null) {
+	// if (dto.getProductName().matches("[A-Za-z0-9 ]{2,25}")) {
+	// Product product = mapper.map(dto, Product.class);
+	// productdao.addProduct(product);
+	// if (product != null) {
+	// logger.info("Product Added" + product);
+	// return mapper.map(product, ProductDto.class);
+	// } else {
+	// return null;
+	// }
+	// } else {
+	// throw new PricingException(
+	// "The Product Name must contain only letters,numbers,spaces and with in 2 and
+	// 25 characters");
+	// }
+	// } else {
+	// throw new PricingConflictsException("The product With name " +
+	// dto.getProductName() + " already exists");
+	// }
+	//
+	// }
+
 	@Override
 	public ProductDto addProduct(ProductDto dto) {
 
+		if (verifyProductDto(dto)) {
+
+			// persist product
+			Product prod = new Product();
+			BeanUtils.copyProperties(dto, prod, "price", "additionalPrices", "services");
+			prod = productdao.addProduct(prod);
+
+			// persist product price
+			ProductPrice price = mapper.map(dto.getPrice(), ProductPrice.class);
+			price.setProductId(prod.getProductId());
+			priceDao.addProductPrice(price);
+
+			// persist additional prices
+			List<AdditionalPriceDto> addlList = dto.getAdditionalPrices();
+			if (!addlList.isEmpty()) {
+				for (AdditionalPriceDto p : addlList) {
+					AdditionalPrice pr = mapper.map(p, AdditionalPrice.class);
+					pr.setProductId(prod.getProductId());
+					expDao.addAddlPrice(pr);
+				}
+			}
+
+			// persist list of services
+			List<ProductServiceDto> prodServList = dto.getServices();
+			if (!prodServList.isEmpty()) {
+				for (ProductServiceDto psd : prodServList) {
+					ProductService ps = mapper.map(psd, ProductService.class);
+					ps.setProductId(prod.getProductId());
+					prodServDao.addProductService(ps);
+				}
+			}
+
+			Product p = productdao.getProduct(prod.getProductId());
+			return mapper.map(p, ProductDto.class);
+		} else {
+			throw new PricingException("Unknown error while adding product");
+
+		}
+	}
+
+	public boolean verifyProductDto(ProductDto dto) {
 		if (productdao.getProductByName(dto.getProductName()) == null) {
-			if (dto.getProductName().matches("[A-Za-z ]{2,25}")) {
-				Product product = mapper.map(dto, Product.class);
-				productdao.addProduct(product);
-				if (product != null) {
-					logger.info("Product Added" + product);
-					return mapper.map(product, ProductDto.class);
+			if (dto.getProductName().matches("[A-Za-z0-9 ]{2,25}")) {
+				if (dto.getPrice() != null && dto.getPrice().getPrice() > 0) {
+					return true;
 				} else {
-					return null;
+					throw new PricingConflictsException("The product price must be greater than 0");
 				}
 			} else {
-				throw new PricingException(
-						"The Product Name must contain only letters,numbers,spaces and with in 2 and 25 characters");
+				throw new PricingConflictsException(
+						"Product Name must be letters numbers and spaces and be within 25 characters");
 			}
 		} else {
-			throw new PricingConflictsException("The product With name " + dto.getProductName() + " already exists");
+			throw new PricingConflictsException("The product with name " + dto.getProductName() + " already exists");
 		}
 
 	}
@@ -97,7 +161,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Override
 	public ProductDto updateProduct(ProductDto dto) throws NotFoundException {
-		if (dto.getProductId() > 0 && dto.getProductName().matches("[A-Za-z ]{2,25}")) {
+		if (dto.getProductId() > 0 && dto.getProductName().matches("[A-Za-z0-9 ]{2,25}")) {
 			Product product = mapper.map(dto, Product.class);
 			product = productdao.updateProduct(product);
 			if (product != null) {

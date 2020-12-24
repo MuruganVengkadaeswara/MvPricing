@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,32 +34,42 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 	ProductServiceDao prodServDao;
 
 	@Autowired
+	ProductManagerService productService;
+
+	@Autowired
 	ModelMapper mapper;
 
 	@Override
 	public PlanDto addPlan(PlanDto dto) {
-
-		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
-		if (dto.getProductId() > 0) {
-			if (!prodServDao.getAllServicesOfProduct(dto.getProductId()).isEmpty()) {
-				if (Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
-					Plan plan = mapper.map(dto, Plan.class);
-					plan = plandao.addPlan(plan);
-					if (plan != null) {
-						return mapper.map(plan, PlanDto.class);
-					} else {
-						return null;
-					}
-				} else {
-					throw new PricingConflictsException("Plan Type must either be monthly,yearly,weekly or daily");
-				}
-
+		if (verifyPlanDto(dto)) {
+			ProductDto pdto = productService.addProduct(dto.getProduct());
+			Plan plan = new Plan();
+			BeanUtils.copyProperties(dto, plan, "product");
+			plan.setProductId(pdto.getProductId());
+			plan = plandao.addPlan(plan);
+			if (plan != null) {
+				return mapper.map(getPlan(plan.getPlanId()), PlanDto.class);
 			} else {
-				throw new PricingConflictsException(
-						"The product to be added has no services in it ! please add atleast one service");
+				return null;
 			}
 		} else {
-			throw new PricingException("Product id must be > 0");
+			throw new PricingConflictsException("Unknown Error while adding Plan");
+		}
+
+	}
+
+	public boolean verifyPlanDto(PlanDto dto) {
+		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
+
+		if (dto.getPlanType() != null && Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
+			if (dto.getProduct() != null) {
+				return true;
+			} else {
+				throw new PricingConflictsException("Product Must not be null");
+			}
+		} else {
+			throw new PricingConflictsException(
+					"plan Type must not be null and be either monthly,yearly,weekly,or daily");
 		}
 
 	}
@@ -139,6 +150,16 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			}
 		}
 		return dtolist;
+	}
+
+	@Override
+	public int getProductIdByPlanId(int planId) throws NotFoundException {
+		int pId = plandao.getProductIdByPlanId(planId);
+		if (pId > 0) {
+			return pId;
+		} else {
+			throw new NotFoundException("Plan not found");
+		}
 	}
 
 }

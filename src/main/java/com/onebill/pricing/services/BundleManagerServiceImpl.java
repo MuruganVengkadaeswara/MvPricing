@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.onebill.pricing.dao.BundleDao;
 import com.onebill.pricing.dao.BundleProductDao;
+import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
 import com.onebill.pricing.dto.ProductDto;
@@ -33,35 +34,63 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	BundleProductDao bundleProdDao;
 
 	@Autowired
+	ProductServiceDao prodServDao;
+
+	@Autowired
 	ModelMapper mapper;
 
 	@Override
 	public BundleDto addBundle(BundleDto dto) {
 
+		if (verifyBundleDto(dto)) {
+			Bundle bundle = new Bundle();
+			BeanUtils.copyProperties(dto, bundle, "bundleProducts");
+			bundle = bundleDao.addBundle(bundle);
+
+			List<BundleProductDto> list = dto.getBundleProducts();
+
+			if (bundle != null) {
+				if (list != null) {
+					for (BundleProductDto bp : list) {
+						BundleProduct p = mapper.map(bp, BundleProduct.class);
+						p.setBundleId(bundle.getBundleId());
+						bundleProdDao.addBundleProduct(p);
+					}
+				}
+				return mapper.map(bundleDao.getBundle(bundle.getBundleId()), BundleDto.class);
+			} else {
+				return null;
+			}
+		} else {
+			throw new PricingConflictsException("Unknown error while adding bundle");
+		}
+
+	}
+
+	public boolean verifyBundleDto(BundleDto dto) {
+
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
 
-		if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
-			if (dto.getBundleName().matches("[A-Za-z ]{2,25}")) {
-				if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
-					Bundle bundle = mapper.map(dto, Bundle.class);
-					bundle = bundleDao.addBundle(bundle);
-					if (bundle != null) {
-						return mapper.map(bundle, BundleDto.class);
+		if (dto.getBundleProducts() != null) {
+			if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
+				if (dto.getBundleName().matches("[A-Za-z0-9 ]{2,25}")) {
+					if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
+						return true;
 					} else {
-						return null;
+						throw new PricingConflictsException(
+								"The bundle Type must either be monthly,yearly,weekly or daily");
 					}
 				} else {
 					throw new PricingConflictsException(
-							"The bundle Type must either be monthly,yearly,weekly or daily");
+							"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
 				}
-
 			} else {
-				throw new PricingConflictsException(
-						"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
+				throw new PricingConflictsException("Bundle with name" + dto.getBundleName() + "Already exists");
 			}
+
 		} else {
-			throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + " already exists");
-		}
+			throw new PricingConflictsException("Bundle Products Cannot be null");
+		}	
 
 	}
 
@@ -141,13 +170,19 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	@Override
 	public BundleProductDto addBundleProduct(BundleProductDto dto) {
 		if (dto.getBundleId() > 0 && dto.getProductId() > 0) {
-			BundleProduct bp = mapper.map(dto, BundleProduct.class);
-			bp = bundleProdDao.addBundleProduct(bp);
-			if (bp != null) {
-				return mapper.map(bp, BundleProductDto.class);
+			if (!prodServDao.getAllProductServicesByProductId(dto.getProductId()).isEmpty()) {
+				BundleProduct bp = mapper.map(dto, BundleProduct.class);
+				bp = bundleProdDao.addBundleProduct(bp);
+				if (bp != null) {
+					return mapper.map(bp, BundleProductDto.class);
+				} else {
+					return null;
+				}
 			} else {
-				return null;
+				throw new PricingConflictsException(
+						"The product to be added has no service please update the services");
 			}
+
 		} else {
 			throw new PricingException("Bundle id and product id must be > 0");
 		}

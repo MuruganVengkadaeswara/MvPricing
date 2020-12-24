@@ -36,7 +36,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 	public ServiceDto addService(ServiceDto dto) {
 
 		if (servicedao.getServiceByName(dto.getServiceName()) == null) {
-			if (dto.getServiceName().matches("[A-Za-z ]{2,25}")) {
+			if (dto.getServiceName().matches("[A-Za-z0-9 ]{2,25}")) {
 				Service service = mapper.map(dto, Service.class);
 				servicedao.addService(service);
 				if (service != null) {

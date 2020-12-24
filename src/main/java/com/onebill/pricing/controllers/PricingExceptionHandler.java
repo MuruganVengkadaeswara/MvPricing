@@ -50,7 +50,7 @@ public class PricingExceptionHandler {
 
 		resp.setError(true);
 
-		resp.setResponse("The data entered may be duplicate");
+		resp.setResponse(e.getMessage());
 
 		return resp;
 	}
