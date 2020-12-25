@@ -78,4 +78,11 @@ public class BundleDaoImpl implements BundleDao {
 		}
 	}
 
+	@Override
+	public List<Bundle> searchBundleByName(String text) {
+		TypedQuery<Bundle> query = manager.createQuery("FROM Bundle where bundleName like :name", Bundle.class);
+		query.setParameter("name", "%" + text + "%");
+		return query.getResultList();
+	}
+
 }

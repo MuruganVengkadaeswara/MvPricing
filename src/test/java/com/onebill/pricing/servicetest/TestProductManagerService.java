@@ -53,8 +53,8 @@ public class TestProductManagerService {
 	public void addDuplicateProduct() {
 		expectedEx.expect(PricingConflictsException.class);
 		expectedEx.expectMessage("The product With name dummy already exists");
-		addDummyProduct("dummy",400);
-		addDummyProduct("dummy",400);
+		addDummyProduct("dummy", 400);
+		addDummyProduct("dummy", 400);
 
 	}
 
@@ -62,14 +62,14 @@ public class TestProductManagerService {
 	public void testAddProductWithoutPrice() {
 		expectedEx.expect(PricingConflictsException.class);
 		expectedEx.expectMessage("The product price must be greater than 0");
-		addDummyProduct("Dummy",400);
+		addDummyProduct("Dummy", 400);
 
 	}
 
 	@Test
 	public void addProductWithInvalidName() {
 		expectedEx.expect(PricingConflictsException.class);
-		addDummyProduct("$^kjdhfgksjdb89(*^&U&((",400);
+		addDummyProduct("$^kjdhfgksjdb89(*^&U&((", 400);
 	}
 
 	@Test
@@ -90,13 +90,13 @@ public class TestProductManagerService {
 	@Test
 	public void addProductWithMoreThan25Chars() {
 		expectedEx.expect(PricingException.class);
-		addDummyProduct("sdjfhaskjdhfkjahsdfjhjksahdfkjhasjdfhkjsahdkfjhjsadfhkjsfkjsh",400);
+		addDummyProduct("sdjfhaskjdhfkjahsdfjhjksahdfkjhasjdfhkjsahdkfjhjsadfhkjsfkjsh", 400);
 	}
 
 	@Test
 	public void addProductWithLessThan2Chars() {
 		expectedEx.expect(PricingException.class);
-		addDummyProduct("s",400);
+		addDummyProduct("s", 400);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class TestProductManagerService {
 
 	@Test
 	public void testGetProductByName() throws NotFoundException {
-		addDummyProduct("dummy",400);
+		addDummyProduct("dummy", 400);
 		ProductDto dto = service.getProductByName("dummy");
 		assertEquals("dummy", dto.getProductName());
 		assertTrue(dto.getProductId() > 0);
@@ -135,7 +135,7 @@ public class TestProductManagerService {
 	@Test
 	public void testUpdateProductWithInvalidName() throws NotFoundException {
 		expectedEx.expect(PricingConflictsException.class);
-		ProductDto dto = addDummyProduct("Dummy",400);
+		ProductDto dto = addDummyProduct("Dummy", 400);
 		dto.setProductName("**03984%%##@@#$!!22342rsvd");
 		service.updateProduct(dto);
 	}
@@ -152,7 +152,7 @@ public class TestProductManagerService {
 	@Test
 	public void testDeleteProductWithServices() throws NotFoundException {
 		expectedEx.expect(NotFoundException.class);
-		ProductDto p = addDummyProduct("dummy product",400);
+		ProductDto p = addDummyProduct("dummy product", 400);
 		ServiceDto s = addDummyService("dummy service");
 		logger.info(p);
 		ProductServiceDto ps = addDummyProdService(p.getProductId(), s.getServiceId());
@@ -252,6 +252,7 @@ public class TestProductManagerService {
 		pr.setPrice(price);
 		p.setProductName(name);
 		p.setPrice(pr);
+
 		return service.addProduct(p);
 	}
 

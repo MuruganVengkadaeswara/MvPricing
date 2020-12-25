@@ -27,15 +27,15 @@ public class PlanDaoImpl implements PlanDao {
 	@Transactional
 	public Plan addPlan(Plan plan) {
 
-		TypedQuery<ProductPrice> query = manager.createQuery("From ProductPrice where productId= :id",
-				ProductPrice.class);
-		query.setParameter("id", plan.getProductId());
-		if (!query.getResultList().isEmpty()) {
-			manager.persist(plan);
-			return plan;
-		} else {
-			throw new PricingException("The Product to be added has no price ! please update the price");
-		}
+//		TypedQuery<ProductPrice> query = manager.createQuery("From ProductPrice where productId= :id",
+//				ProductPrice.class);
+//		query.setParameter("id", plan.getProductId());
+//		if (!query.getResultList().isEmpty()) {
+		manager.persist(plan);
+		return plan;
+//		} else {
+//			throw new PricingException("The Product to be added has no price ! please update the price");
+//		}
 	}
 
 	@Override
@@ -100,6 +100,27 @@ public class PlanDaoImpl implements PlanDao {
 		} else {
 			return 0;
 		}
+	}
+
+	@Override
+	public Plan getPlanByName(String text) {
+		TypedQuery<Plan> query = manager.createQuery("FROM Plan where planName= :name", Plan.class);
+		query.setParameter("name", text);
+		List<Plan> list = query.getResultList();
+		if (!list.isEmpty()) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+
+	}
+
+	@Override
+	public List<Plan> searchPlanByName(String text) {
+		TypedQuery<Plan> query = manager.createQuery("FROM Plan where planName like :name", Plan.class);
+		query.setParameter("name", "%" + text + "%");
+		return query.getResultList();
+
 	}
 
 }

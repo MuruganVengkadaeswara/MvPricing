@@ -8,7 +8,8 @@ public class PlanDto {
 	private int planId;
 
 	private ProductDto product;
-
+	
+	private String planName;
 
 	private int productId;
 

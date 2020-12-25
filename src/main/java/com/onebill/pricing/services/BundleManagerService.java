@@ -20,6 +20,8 @@ public interface BundleManagerService {
 
 	public List<BundleDto> getAllBundles() throws NotFoundException;
 
+	public List<BundleDto> searchBundleByName(String text);
+
 	public List<ProductDto> getAllProductsOfbundle(int bundleId) throws NotFoundException;
 
 	public BundleDto getBundleByName(String text) throws NotFoundException;

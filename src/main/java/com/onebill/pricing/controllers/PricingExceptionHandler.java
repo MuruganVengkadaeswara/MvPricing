@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
+import com.onebill.pricing.exceptions.PricingNotFoundException;
 
 import javassist.NotFoundException;
 
@@ -58,6 +59,18 @@ public class PricingExceptionHandler {
 	@ExceptionHandler(NotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	ResponseDto handleNotFound(Exception e) {
+		ResponseDto resp = new ResponseDto();
+
+		resp.setError(true);
+
+		resp.setResponse(e.getMessage());
+
+		return resp;
+	}
+
+	@ExceptionHandler(PricingNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	ResponseDto handlePricingNotFound(Exception e) {
 		ResponseDto resp = new ResponseDto();
 
 		resp.setError(true);

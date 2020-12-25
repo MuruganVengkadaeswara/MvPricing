@@ -42,10 +42,14 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 	@Override
 	public PlanDto addPlan(PlanDto dto) {
 		if (verifyPlanDto(dto)) {
-			ProductDto pdto = productService.addProduct(dto.getProduct());
 			Plan plan = new Plan();
-			BeanUtils.copyProperties(dto, plan, "product");
-			plan.setProductId(pdto.getProductId());
+			if (dto.getProduct() != null) {
+				ProductDto pdto = productService.addProduct(dto.getProduct());
+				BeanUtils.copyProperties(dto, plan, "product");
+				plan.setProductId(pdto.getProductId());
+			} else {
+				plan.setProductId(dto.getProductId());
+			}
 			plan = plandao.addPlan(plan);
 			if (plan != null) {
 				return mapper.map(getPlan(plan.getPlanId()), PlanDto.class);
@@ -61,15 +65,30 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 	public boolean verifyPlanDto(PlanDto dto) {
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
 
-		if (dto.getPlanType() != null && Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
-			if (dto.getProduct() != null) {
-				return true;
+		if (dto.getPlanName() != null) {
+			if (plandao.getPlanByName(dto.getPlanName()) == null) {
+				if (dto.getPlanType() != null
+						&& Arrays.stream(plantypes).anyMatch(dto.getPlanType().toLowerCase()::contains)) {
+					if (dto.getProductId() > 0) {
+						if (prodDao.getProduct(dto.getProductId()) != null) {
+							return true;
+						} else {
+							throw new PricingConflictsException("Product Doesn't exist");
+						}
+					} else if (dto.getProduct() != null) {
+						return true;
+					} else {
+						throw new PricingConflictsException("Please provide a product or product id");
+					}
+				} else {
+					throw new PricingConflictsException("Plan Type must either be weekly,monthly,yearly or daily");
+				}
+
 			} else {
-				throw new PricingConflictsException("Product Must not be null");
+				throw new PricingConflictsException("Plan with name " + dto.getPlanName() + " Already exists");
 			}
 		} else {
-			throw new PricingConflictsException(
-					"plan Type must not be null and be either monthly,yearly,weekly,or daily");
+			throw new PricingConflictsException("Plan Name Cannot be null");
 		}
 
 	}
@@ -159,6 +178,30 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			return pId;
 		} else {
 			throw new NotFoundException("Plan not found");
+		}
+	}
+
+	@Override
+	public PlanDto getPlanByName(String text) throws NotFoundException {
+		Plan plan = plandao.getPlanByName(text);
+		if (plan != null) {
+			return mapper.map(plan, PlanDto.class);
+		} else {
+			throw new NotFoundException("Plan With Name " + text + "is not found");
+		}
+	}
+
+	@Override
+	public List<PlanDto> searchPlanByName(String text) throws NotFoundException {
+		List<Plan> list = plandao.searchPlanByName(text);
+		List<PlanDto> dtoList = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (Plan p : list) {
+				dtoList.add(mapper.map(p, PlanDto.class));
+			}
+			return dtoList;
+		} else {
+			throw new NotFoundException("There are no plans like " + text);
 		}
 	}
 

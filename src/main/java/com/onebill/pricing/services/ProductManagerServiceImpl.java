@@ -3,6 +3,7 @@ package com.onebill.pricing.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.logging.Logger;
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import com.onebill.pricing.dao.BundleProductDao;
 import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductPriceDao;
 import com.onebill.pricing.dao.ProductServiceDao;
+import com.onebill.pricing.dao.ServiceDao;
 import com.onebill.pricing.dto.AdditionalPriceDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductPriceDto;
@@ -46,6 +48,9 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 	@Autowired
 	BundleProductDao bpDao;
+
+	@Autowired
+	ServiceDao servDao;
 
 	@Autowired
 	private ModelMapper mapper;
@@ -93,13 +98,16 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			priceDao.addProductPrice(price);
 
 			// persist additional prices
-			List<AdditionalPriceDto> addlList = dto.getAdditionalPrices();
-			if (!addlList.isEmpty()) {
+			List<AdditionalPriceDto> addlList = new ArrayList<>();
+			addlList = dto.getAdditionalPrices();
+			if (addlList != null) {
 				for (AdditionalPriceDto p : addlList) {
 					AdditionalPrice pr = mapper.map(p, AdditionalPrice.class);
 					pr.setProductId(prod.getProductId());
 					expDao.addAddlPrice(pr);
 				}
+			} else {
+				dto.setAdditionalPrices(addlList);
 			}
 
 			// persist list of services
@@ -121,19 +129,43 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	public boolean verifyProductDto(ProductDto dto) {
-		if (productdao.getProductByName(dto.getProductName()) == null) {
-			if (dto.getProductName().matches("[A-Za-z0-9 ]{2,25}")) {
-				if (dto.getPrice() != null && dto.getPrice().getPrice() > 0) {
-					return true;
+		if (dto.getProductName() != null) {
+			if (productdao.getProductByName(dto.getProductName()) == null) {
+				if (dto.getProductName().matches("[A-Za-z0-9 ]{2,25}")) {
+					if (dto.getPrice() != null && dto.getPrice().getPrice() > 0) {
+
+						if (dto.getServices() != null) {
+							List<ProductServiceDto> list = dto.getServices();
+							Set<ProductServiceDto> set = new HashSet<ProductServiceDto>(list);
+							if (list.size() == set.size()) {
+								for (ProductServiceDto p : list) {
+									if (servDao.getService(p.getServiceId()) == null) {
+										throw new PricingConflictsException(
+												"The service with Id " + p.getServiceId() + " Doesn't exist");
+									}
+								}
+								return true;
+							} else {
+								throw new PricingConflictsException(
+										"Trying to add Duplicate Service ! Please remove it");
+							}
+
+						} else {
+							throw new PricingConflictsException("Add Atleast one service");
+						}
+					} else {
+						throw new PricingConflictsException("The product price must be greater than 0");
+					}
 				} else {
-					throw new PricingConflictsException("The product price must be greater than 0");
+					throw new PricingConflictsException(
+							"Product Name must be letters numbers and spaces and be within 25 characters");
 				}
 			} else {
 				throw new PricingConflictsException(
-						"Product Name must be letters numbers and spaces and be within 25 characters");
+						"The product with name " + dto.getProductName() + " already exists");
 			}
 		} else {
-			throw new PricingConflictsException("The product with name " + dto.getProductName() + " already exists");
+			throw new PricingConflictsException("Please Provide a product Name");
 		}
 
 	}

@@ -2,8 +2,9 @@ package com.onebill.pricing.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.onebill.pricing.dao.BundleDao;
 import com.onebill.pricing.dao.BundleProductDao;
+import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
@@ -21,6 +23,7 @@ import com.onebill.pricing.entities.BundleProduct;
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
+import com.onebill.pricing.exceptions.PricingNotFoundException;
 
 import javassist.NotFoundException;
 
@@ -35,6 +38,9 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 
 	@Autowired
 	ProductServiceDao prodServDao;
+
+	@Autowired
+	ProductDao prodDao;
 
 	@Autowired
 	ModelMapper mapper;
@@ -72,25 +78,36 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
 
 		if (dto.getBundleProducts() != null) {
-			if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
-				if (dto.getBundleName().matches("[A-Za-z0-9 ]{2,25}")) {
-					if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
-						return true;
+			List<BundleProductDto> list = dto.getBundleProducts();
+			Set<BundleProductDto> set = new HashSet<>(list);
+			for (BundleProductDto p : list) {
+				if (prodDao.getProduct(p.getProductId()) == null) {
+					throw new PricingConflictsException("The product With Id " + p.getProductId() + " Doesn't exist");
+				}
+			}
+			if (list.size() == set.size()) {
+				if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
+					if (dto.getBundleName().matches("[A-Za-z0-9 ]{2,25}")) {
+						if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
+							return true;
+						} else {
+							throw new PricingConflictsException(
+									"The bundle Type must either be monthly,yearly,weekly or daily");
+						}
 					} else {
 						throw new PricingConflictsException(
-								"The bundle Type must either be monthly,yearly,weekly or daily");
+								"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
 					}
 				} else {
-					throw new PricingConflictsException(
-							"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
+					throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + "Already exists");
 				}
 			} else {
-				throw new PricingConflictsException("Bundle with name" + dto.getBundleName() + "Already exists");
+				throw new PricingConflictsException("Trying to add Duplicate Products , please Remove duplicates");
 			}
 
 		} else {
 			throw new PricingConflictsException("Bundle Products Cannot be null");
-		}	
+		}
 
 	}
 
@@ -255,6 +272,21 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 			throw new NotFoundException("The product with id " + productId + " is not found to this bundle");
 		}
 
+	}
+
+	@Override
+	public List<BundleDto> searchBundleByName(String text) {
+		List<Bundle> list = bundleDao.searchBundleByName(text);
+		List<BundleDto> dtoList = new ArrayList<>();
+		if (!list.isEmpty()) {
+			for (Bundle b : list) {
+
+				dtoList.add(mapper.map(b, BundleDto.class));
+			}
+			return dtoList;
+		} else {
+			throw new PricingNotFoundException("There Are no Bundles like " + text);
+		}
 	}
 
 }

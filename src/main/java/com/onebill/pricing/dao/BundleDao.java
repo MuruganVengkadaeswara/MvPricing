@@ -18,4 +18,6 @@ public interface BundleDao {
 
 	public Bundle getBundleByName(String text);
 
+	public List<Bundle> searchBundleByName(String text);
+
 }

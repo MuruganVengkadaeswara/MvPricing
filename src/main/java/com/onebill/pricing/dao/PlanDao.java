@@ -15,6 +15,10 @@ public interface PlanDao {
 
 	Plan updatePlan(Plan plan);
 
+	Plan getPlanByName(String text);
+
+	List<Plan> searchPlanByName(String text);
+
 	Plan getPlanById(int planId);
 
 	int getProductIdByPlanId(int planId);

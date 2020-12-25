@@ -31,6 +31,11 @@ public class Plan {
 	@NotNull
 	private int productId;
 
+	@Column(name = "plan_name", unique = true)
+	@NotNull
+	@Size(max = 20)
+	private String planName;
+
 	// @Column(name = "validity_days")
 	// @NotNull
 	// private int validityDays;
