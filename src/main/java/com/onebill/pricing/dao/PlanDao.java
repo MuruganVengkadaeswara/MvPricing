@@ -21,6 +21,8 @@ public interface PlanDao {
 
 	Plan getPlanById(int planId);
 
+	int getPlanIdByProductId(int prodId);
+
 	int getProductIdByPlanId(int planId);
 
 	List<Plan> getAllPlans();

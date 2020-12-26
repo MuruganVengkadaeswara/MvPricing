@@ -123,4 +123,16 @@ public class PlanDaoImpl implements PlanDao {
 
 	}
 
+	@Override
+	public int getPlanIdByProductId(int prodId) {
+		TypedQuery<Plan> query = manager.createQuery("From Plan where productId= :id", Plan.class);
+		query.setParameter("id", prodId);
+		List<Plan> list = query.getResultList();
+		if (!list.isEmpty()) {
+			return list.get(0).getPlanId();
+		} else {
+			return 0;
+		}
+	}
+
 }
