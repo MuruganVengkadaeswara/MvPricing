@@ -48,12 +48,14 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 				BeanUtils.copyProperties(dto, plan, "product");
 				plan.setProductId(pdto.getProductId());
 			} else {
-//				if (plandao.getPlanIdByProductId(dto.getProductId()) < 0) {
-
+				if (plandao.getPlanIdByProductId(dto.getProductId()) < 0) {
+					plan.setPlanName(dto.getPlanName());
 					plan.setProductId(dto.getProductId());
-//				} else {
-//					throw new PricingConflictsException("There is already a plan with product Id " + dto.getProductId());
-//				}
+					plan.setPlanType(dto.getPlanType());
+				} else {
+					throw new PricingConflictsException(
+							"There is already a plan with product Id " + dto.getProductId());
+				}
 			}
 			plan = plandao.addPlan(plan);
 			if (plan != null) {
