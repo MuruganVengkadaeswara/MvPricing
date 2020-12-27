@@ -62,16 +62,21 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 
 	@Override
 	public ServiceDto removeService(int serviceId) throws NotFoundException {
-		if (serviceId > 0) {
-			Service service = servicedao.removeService(serviceId);
-			if (service != null) {
-				logger.info("Service deleted" + service);
-				return mapper.map(service, ServiceDto.class);
+		if (prodServDao.getAllProductServicesByServiceId(serviceId).isEmpty()) {
+			if (serviceId > 0) {
+				Service service = servicedao.removeService(serviceId);
+				if (service != null) {
+					logger.info("Service deleted" + service);
+					return mapper.map(service, ServiceDto.class);
+				} else {
+					throw new NotFoundException("The service With id " + serviceId + " is not found");
+				}
 			} else {
-				throw new NotFoundException("The service With id " + serviceId + " is not found");
+				throw new PricingException("Service Id must be greater than 0");
 			}
 		} else {
-			throw new PricingException("Service Id must be greater than 0");
+			throw new PricingConflictsException(
+					"The service is used By one or more products ! please remove them before deleting");
 		}
 
 	}
