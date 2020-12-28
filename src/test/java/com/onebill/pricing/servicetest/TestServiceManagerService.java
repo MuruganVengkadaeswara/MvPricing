@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dao.ServiceDao;
+import com.onebill.pricing.dao.ServiceDaoImpl;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.ProductService;
 import com.onebill.pricing.entities.Service;
@@ -35,10 +36,10 @@ import javassist.NotFoundException;
 public class TestServiceManagerService {
 
 	@Mock
-	private ServiceDao servDao;
+	ServiceDao servDao;
 
 	@Mock
-	private ProductServiceDao prodServDao;
+	ProductServiceDao prodServDao;
 
 	@InjectMocks
 	private ServiceManagerService service = new ServiceManagerServiceImpl();
@@ -56,7 +57,7 @@ public class TestServiceManagerService {
 
 	@Before
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.initMocks(service);
 	}
 
 	@Test
@@ -156,18 +157,19 @@ public class TestServiceManagerService {
 		service.getAllServices();
 	}
 
-	// @Test
-	// public void testGetAllServices() {
-	// List<Service> list = new ArrayList<>();
-	// list.add(makeService("dummy", 1));
-	// list.add(makeService("dummy1", 2));
-	// list.add(makeService("dummy2", 3));
-	//
-	// Mockito.when(servDao.getAllServices()).thenReturn(list);
-	// List<ServiceDto> dtolist = service.getAllServices();
-	// assertEquals(3, dtolist.size());
-	//
-	// }
+	@Test
+	public void testGetAllServices() {
+		List<Service> list = new ArrayList<>();
+		Service s1 = new Service();
+		s1.setServiceId(1);
+		s1.setServiceName("DUMMY");
+		list.add(s1);
+		servDao = Mockito.mock(ServiceDaoImpl.class);
+		Mockito.when(servDao.getAllServices()).thenReturn(list);
+		List<ServiceDto> dtolist = service.getAllServices();
+		assertEquals(1, dtolist.size());
+
+	}
 
 	@Test
 	public void testGetAllProductswithNegativeServiceId() {

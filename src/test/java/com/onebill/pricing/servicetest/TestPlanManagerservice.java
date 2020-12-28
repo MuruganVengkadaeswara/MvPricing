@@ -1,12 +1,9 @@
 package com.onebill.pricing.servicetest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import org.jboss.logging.Logger;
 import org.junit.Before;
@@ -19,19 +16,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import static org.mockito.Mockito.*;
 
-import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dao.PlanDao;
+import com.onebill.pricing.dao.PlanDaoImpl;
 import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.PlanDto;
-import com.onebill.pricing.dto.ProductDto;
-import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.entities.Plan;
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.exceptions.PricingConflictsException;
@@ -211,6 +202,7 @@ public class TestPlanManagerservice {
 		expectedEx.expect(PricingNotFoundException.class);
 		expectedEx.expectMessage("There are no plans");
 		List<Plan> list = new ArrayList<Plan>();
+		plandao = Mockito.mock(PlanDao.class);
 		Mockito.when(plandao.getAllPlans()).thenReturn(list);
 		service.getAllPlans();
 	}
@@ -224,96 +216,32 @@ public class TestPlanManagerservice {
 		service.getAllProductsOfPlan(5);
 	}
 
-	
 	@Test
-	public void testGetNonExistingPlanByName() {
-		Mockito.when(methodCall)
+	public void getNonExistingPlanByName() {
+		expectedEx.expect(PricingNotFoundException.class);
+		expectedEx.expectMessage("Plan With Name Hello is not found");
+		Mockito.when(plandao.getPlanByName("Hello")).thenReturn(null);
+		service.getPlanByName("Hello");
 	}
-	// @Test
-	// public void addPlanWithoutProduct() {
-	// expectedEx.expect(PricingConflictsException.class);
-	// expectedEx.expectMessage("Product Must not be null");
-	// PlanDto dto = new PlanDto();
-	// dto.setPlanType("Monthly");
-	// service.addPlan(dto);
-	// }
-	//
-	// @Test
-	// public void addPlanWithProduct() {
-	//
-	// }
-	//
-	// @Test
-	// public void addProductToPlanWithoutProductPrice() {
-	// expectedEx.expect(PricingConflictsException.class);
-	// ProductDto dto = addDummyProduct("dummy");
-	// addDummyPlan(dto.getProductId(), "monthly");
-	//
-	// }
-	//
-	// @Test
-	// public void testaddPlanWithoutProductId() {
-	// expectedEx.expect(PricingException.class);
-	// expectedEx.expectMessage("Product id must be > 0");
-	// PlanDto plan = new PlanDto();
-	// plan.setPlanType("Monthly");
-	// service.addPlan(plan);
-	// }
-	//
-	// @Test
-	// public void testAddPlanWithNonExistingProductId() {
-	// expectedEx.expect(PricingConflictsException.class);
-	// addDummyPlan(9999, "monthly");
-	// }
-	//
-	// @Test
-	// public void testAddPlanWithInvalidPlanType() {
-	// expectedEx.expect(PricingConflictsException.class);
-	// ProductDto p = addDummyProduct("dummy");
-	// addDummyPlan(p.getProductId(), "((#(&eo[we]]");
-	// }
-	//
-	// @Test
-	// public void addPlanWithPrice() {
-	// expectedEx.expect(PricingConflictsException.class);
-	// ProductDto p = addDummyProduct("dummy");
-	// ProductPriceDto price = new ProductPriceDto();
-	// price.setPrice(400);
-	// price.setProductId(p.getProductId());
-	//
-	// PlanDto plan = addDummyPlan(p.getProductId(), "monthly");
-	//
-	// assertTrue(plan.getPlanId() > 0);
-	// assertEquals(p.getProductId(), plan.getProductId());
-	// }
-	//
-	// @Test
-	// public void updatePlanWithInvalidPlanType() {
-	//
-	// expectedEx.expect(PricingConflictsException.class);
-	//
-	// ProductDto p = addDummyProduct("dummy");
-	// ProductPriceDto price = new ProductPriceDto();
-	// price.setPrice(400);
-	// price.setProductId(p.getProductId());
-	//
-	// PlanDto plan = addDummyPlan(p.getProductId(), "monthly");
-	// plan.setPlanType("(9i4jsidjflksdjfl03i4j8riw");
-	// service.updatePlan(plan);
-	//
-	// }
-	//
-	// public ProductDto addDummyProduct(String name) {
-	// ProductDto p = new ProductDto();
-	// p.setProductName(name);
-	// return null;
-	// }
-	//
-	// public PlanDto addDummyPlan(int productId, String planType) {
-	// PlanDto plan = new PlanDto();
-	// plan.setProductId(productId);
-	// plan.setPlanType(planType);
-	// return service.addPlan(plan);
-	// }
+
+	@Test
+	public void searchNonExistingPlanByName() {
+		expectedEx.expect(PricingNotFoundException.class);
+		expectedEx.expectMessage("There are no plans like Hello");
+		List<Plan> list = new ArrayList<Plan>();
+		when(plandao.searchPlanByName("Hello")).thenReturn(list);
+		service.searchPlanByName("Hello");
+	}
+
+	@Test
+	public void getExistingPlanByName() {
+		Plan p = new Plan();
+		p.setPlanName("Airtel Monthly");
+		p.setPlanId(1);
+		plandao = mock(PlanDaoImpl.class);
+		when(plandao.getPlanByName(anyString())).thenReturn(p);
+		PlanDto dto = service.getPlanByName("Airtel Monthly");
+		assertEquals(p.getPlanName(), dto.getPlanName());
+	}
 
 }

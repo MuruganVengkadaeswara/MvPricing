@@ -8,6 +8,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,6 +19,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.onebill.pricing.PricingAppConfiguration;
+import com.onebill.pricing.dao.BundleDao;
+import com.onebill.pricing.dao.BundleProductDao;
+import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dto.BundleDto;
 import com.onebill.pricing.dto.BundleProductDto;
 import com.onebill.pricing.dto.ProductDto;
@@ -23,36 +30,52 @@ import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.services.BundleManagerService;
+import com.onebill.pricing.services.BundleManagerServiceImpl;
 import com.onebill.pricing.services.ProductManagerService;
+import com.onebill.pricing.services.ProductManagerServiceImpl;
 import com.onebill.pricing.services.ServiceManagerService;
+import com.onebill.pricing.services.ServiceManagerServiceImpl;
 
 import javassist.NotFoundException;
 
-@Transactional
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PricingAppConfiguration.class)
-@WebAppConfiguration
+@RunWith(MockitoJUnitRunner.class)
 public class TestBundleManagerService {
 
-	@Autowired
-	ApplicationContext context;
+	@Mock
+	ProductDao prodDao;
 
-	@Autowired
-	ProductManagerService prodService;
+	@Mock
+	BundleDao bundleDao;
 
-	@Autowired
-	BundleManagerService bundleService;
+	@Mock
+	BundleProductDao bundleProdDao;
 
-	@Autowired
-	ServiceManagerService smService;
+	@InjectMocks
+	ProductManagerService prodService = new ProductManagerServiceImpl();
+
+	@InjectMocks
+	BundleManagerService bundleService = new BundleManagerServiceImpl();
+
+	@InjectMocks
+	ServiceManagerService smService = new ServiceManagerServiceImpl();
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
-
+	
+	@Test
+	public void testAddBundleWithNullName() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("Bundle Name Cannot Be null");
+		BundleDto dto = new BundleDto();
+		bundleService.addBundle(dto);
+	}
 	@Test
 	public void testAddBundleWithInvalidName() {
 		expectedEx.expect(PricingConflictsException.class);
-		addDummyBundle("376HNKE2137(", "monthly");
+		expectedEx.expectMessage("Bundle Products Cannot be null");
+		BundleDto dto = new BundleDto();
+		dto.setBundleName("AJSFHAJ!##");
+		bundleService.addBundle(dto);
 	}
 
 	@Test

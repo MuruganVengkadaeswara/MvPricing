@@ -77,37 +77,42 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
 
-		if (dto.getBundleProducts() != null) {
-			List<BundleProductDto> list = dto.getBundleProducts();
-			Set<BundleProductDto> set = new HashSet<>(list);
-			for (BundleProductDto p : list) {
-				if (prodDao.getProduct(p.getProductId()) == null) {
-					throw new PricingConflictsException("The product With Id " + p.getProductId() + " Doesn't exist");
+		if (dto.getBundleName() != null) {
+			if (dto.getBundleProducts() != null) {
+				List<BundleProductDto> list = dto.getBundleProducts();
+				Set<BundleProductDto> set = new HashSet<>(list);
+				for (BundleProductDto p : list) {
+					if (prodDao.getProduct(p.getProductId()) == null) {
+						throw new PricingConflictsException("The product With Id " + p.getProductId() + " Doesn't exist");
+					}
 				}
-			}
-			if (list.size() == set.size()) {
-				if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
-					if (dto.getBundleName().matches("[A-Za-z0-9 ]{2,25}")) {
-						if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
-							return true;
+				if (list.size() == set.size()) {
+					if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
+						if (dto.getBundleName().matches("[A-Za-z0-9 ]{2,25}")) {
+							if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
+								return true;
+							} else {
+								throw new PricingConflictsException(
+										"The bundle Type must either be monthly,yearly,weekly or daily");
+							}
 						} else {
 							throw new PricingConflictsException(
-									"The bundle Type must either be monthly,yearly,weekly or daily");
+									"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
 						}
 					} else {
-						throw new PricingConflictsException(
-								"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
+						throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + "Already exists");
 					}
 				} else {
-					throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + "Already exists");
+					throw new PricingConflictsException("Trying to add Duplicate Products , please Remove duplicates");
 				}
-			} else {
-				throw new PricingConflictsException("Trying to add Duplicate Products , please Remove duplicates");
-			}
 
+			} else {
+				throw new PricingConflictsException("Bundle Products Cannot be null");
+			}	
 		} else {
-			throw new PricingConflictsException("Bundle Products Cannot be null");
+			throw new PricingConflictsException("Bundle Name Cannot Be null");
 		}
+		
 
 	}
 

@@ -199,7 +199,7 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 		if (plan != null) {
 			return mapper.map(plan, PlanDto.class);
 		} else {
-			throw new PricingNotFoundException("Plan With Name " + text + "is not found");
+			throw new PricingNotFoundException("Plan With Name " + text + " is not found");
 		}
 	}
 

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.transaction.Transactional;
 
 import org.jboss.logging.Logger;
 import org.junit.Before;
@@ -22,13 +21,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import static org.mockito.Mockito.*;
 
-import com.onebill.pricing.PricingAppConfiguration;
 import com.onebill.pricing.dao.AdditionalPriceDao;
 import com.onebill.pricing.dao.BundleProductDao;
 import com.onebill.pricing.dao.ProductDao;
@@ -265,199 +259,7 @@ public class TestProductManagerService {
 
 	@Test
 	public void testAddProductService() {
-		
+
 	}
-	//
-	// @Test
-	// public void addProductWithInvalidName() {
-	// expectedEx.expect(PricingConflictsException.class);
-	// addDummyProduct("$^kjdhfgksjdb89(*^&U&((", 400);
-	// }
-
-	// @Test
-	// public void testAddProductWithPrice() {
-	// ProductDto p = new ProductDto();
-	// p.setProductName("hello");
-	//
-	// ProductPriceDto price = new ProductPriceDto();
-	// price.setPrice(499.99);
-	//
-	// p.setPrice(price);
-	//
-	// ProductDto p1 = service.addProduct(p);
-	// assertEquals(499.99, p.getPrice().getPrice(), 0);
-	//
-	// }
-	//
-	// @Test
-	// public void addProductWithMoreThan25Chars() {
-	// expectedEx.expect(PricingException.class);
-	// addDummyProduct("sdjfhaskjdhfkjahsdfjhjksahdfkjhasjdfhkjsahdkfjhjsadfhkjsfkjsh",
-	// 400);
-	// }
-	//
-	// @Test
-	// public void addProductWithLessThan2Chars() {
-	// expectedEx.expect(PricingException.class);
-	// addDummyProduct("s", 400);
-	// }
-	//
-	// @Test
-	// public void testGetNonExistingProduct() throws NotFoundException {
-	// expectedEx.expect(NotFoundException.class);
-	// service.getProduct(636363);
-	// }
-	//
-	// @Test
-	// public void removeProductWithInvalidId() throws NotFoundException {
-	// expectedEx.expect(PricingException.class);
-	// expectedEx.expectMessage("Product Id must be greater than 0");
-	// service.removeProductById(-999);
-	// }
-	//
-	// @Test
-	// public void removeProductThatDoesntExist() throws NotFoundException {
-	// expectedEx.expect(NotFoundException.class);
-	// service.removeProductById(999999);
-	// }
-	//
-	// @Test
-	// public void testGetProductByName() throws NotFoundException {
-	// addDummyProduct("dummy", 400);
-	// ProductDto dto = service.getProductByName("dummy");
-	// assertEquals("dummy", dto.getProductName());
-	// assertTrue(dto.getProductId() > 0);
-	// }
-	//
-	// @Test
-	// public void testGetNonExistingProductByName() throws NotFoundException {
-	// expectedEx.expect(NotFoundException.class);
-	// service.getProductByName("NON EXISTING PRODUCT");
-	// }
-	//
-	// @Test
-	// public void testUpdateProductWithInvalidName() throws NotFoundException {
-	// expectedEx.expect(PricingConflictsException.class);
-	// ProductDto dto = addDummyProduct("Dummy", 400);
-	// dto.setProductName("**03984%%##@@#$!!22342rsvd");
-	// service.updateProduct(dto);
-	// }
-	//
-	// @Test
-	// public void testUpdateNonExistingProduct() throws NotFoundException {
-	// expectedEx.expect(NotFoundException.class);
-	// ProductDto dto = new ProductDto();
-	// dto.setProductId(999);
-	// dto.setProductName("NON EXISTING PRODUCT");
-	// service.updateProduct(dto);
-	// }
-	//
-	// @Test
-	// public void testDeleteProductWithServices() throws NotFoundException {
-	// expectedEx.expect(NotFoundException.class);
-	// ProductDto p = addDummyProduct("dummy product", 400);
-	// ServiceDto s = addDummyService("dummy service");
-	// logger.info(p);
-	// ProductServiceDto ps = addDummyProdService(p.getProductId(),
-	// s.getServiceId());
-	// service.removeProductById(p.getProductId());
-	// assertNull(service.getProductService(ps.getPsId()));
-	// assertNull(service.getProduct(p.getProductId()));
-	//
-	// }
-
-	// @Test
-	// public void testAddProduct() {
-	// ProductDto p = addDummyProduct("dummy");
-	// assertTrue(p.getProductId() > 0);
-	// assertEquals("dummy", p.getProductName());
-	// }
-	//
-	// @Test
-	// public void testUpdateProduct() {
-	// ProductDto p = addDummyProduct("dummy");
-	// p.setProductName("updated dummy");
-	// p = service.updateProduct(p);
-	// assertEquals("updated dummy", p.getProductName());
-	// }
-	//
-	// @Test
-	// public void testRemoveProductById() {
-	// ProductDto p = addDummyProduct("dummy");
-	// p = service.removeProductById(p.getProductId());
-	// assertNull(service.getProduct(p.getProductId()));
-	// }
-	//
-	// @Test
-	// public void testGetProductById() {
-	// ProductDto p = addDummyProduct("dummy");
-	// ProductDto p1 = service.getProduct(p.getProductId());
-	//
-	// assertEquals(p.getProductName(), p1.getProductName());
-	// }
-	//
-	// @Test
-	// public void testGetAllProducts() throws NotFoundException {
-	// addDummyProduct("dummy");
-	// List<ProductDto> list = service.getAllProducts();
-	// assertTrue(!list.isEmpty());
-	// }
-	//
-	// // product price
-	//
-	// @Test
-	// public void addProductPrice() {
-	// ProductDto p = addDummyProduct("dummy");
-	// ProductPriceDto price = new ProductPriceDto();
-	//
-	// price.setPrice(400);
-	// price.setProductId(p.getProductId());
-	//
-	// price = service.addProductPrice(price);
-	//
-	// assertEquals(400, price.getPrice(), 0);
-	// }
-	//
-	// @Test
-	// public void updateProductPrice() {
-	// ProductDto p = addDummyProduct("dummy");
-	// ProductPriceDto price = new ProductPriceDto();
-	//
-	// price.setPrice(400);
-	// price.setProductId(p.getProductId());
-	//
-	// price = service.addProductPrice(price);
-	// price.setPrice(300);
-	//
-	// price = service.updateProductPrice(price);
-	// assertEquals(300, price.getPrice(), 0);
-	//
-	// }
-
-	public ServiceDto addDummyService(String name) {
-		ServiceDto s = new ServiceDto();
-		s.setServiceName(name);
-		return null;
-	}
-
-	// public ProductServiceDto addDummyProdService(int productId, int serviceId) {
-	// ProductServiceDto ps = new ProductServiceDto();
-	// ps.setProductId(productId);
-	// // ps.setServiceId(serviceId);
-	// ps.setFreeUnits(100);
-	// ps.setUnitType("mb");
-	// ps.setServicePrice(0.5);
-	// return service.addProductService(ps);
-	// }
-	//
-	// public ProductDto addDummyProduct(String name, double price) {
-	// ProductDto p = new ProductDto();
-	// ProductPriceDto pr = new ProductPriceDto();
-	// pr.setPrice(price);
-	// p.setProductName(name);
-	// p.setPrice(pr);
-	//
-	// return service.addProduct(p);
-	// }
 
 }

@@ -44,4 +44,5 @@ public class Plan {
 	@Size(max = 20)
 	private String planType;
 
+
 }
