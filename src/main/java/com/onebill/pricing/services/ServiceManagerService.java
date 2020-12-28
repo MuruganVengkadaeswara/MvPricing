@@ -23,6 +23,6 @@ public interface ServiceManagerService {
 
 	List<ProductDto> getAllProductsOfService(int serviceId);
 
-	ServiceDto getServiceByName(String text) throws NotFoundException;
+	ServiceDto getServiceByName(String text);
 
 }

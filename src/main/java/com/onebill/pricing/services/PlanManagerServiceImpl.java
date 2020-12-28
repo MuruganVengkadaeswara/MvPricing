@@ -18,6 +18,7 @@ import com.onebill.pricing.entities.Plan;
 import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
+import com.onebill.pricing.exceptions.PricingNotFoundException;
 
 import javassist.NotFoundException;
 
@@ -48,14 +49,14 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 				BeanUtils.copyProperties(dto, plan, "product");
 				plan.setProductId(pdto.getProductId());
 			} else {
-//				if (plandao.getPlanIdByProductId(dto.getProductId()) < 0) {
+				// if (plandao.getPlanIdByProductId(dto.getProductId()) < 0) {
 				plan.setPlanName(dto.getPlanName());
 				plan.setProductId(dto.getProductId());
 				plan.setPlanType(dto.getPlanType());
-//				} else {
-//					throw new PricingConflictsException(
-//							"There is already a plan with product Id " + dto.getProductId());
-//				}
+				// } else {
+				// throw new PricingConflictsException(
+				// "There is already a plan with product Id " + dto.getProductId());
+				// }
 			}
 			plan = plandao.addPlan(plan);
 			if (plan != null) {
@@ -119,7 +120,7 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 				throw new PricingConflictsException("Plan Type must either be monthly,yearly,weekly or daily");
 			}
 		} else {
-			throw new PricingException("The plan id and validity days must be greater than 0");
+			throw new PricingException("The plan id  must be greater than 0");
 		}
 
 	}
@@ -131,7 +132,7 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			if (plan != null) {
 				return mapper.map(plan, PlanDto.class);
 			} else {
-				return null;
+				throw new PricingNotFoundException("Plan with id " + planId + " is not found");
 			}
 		} else {
 			throw new PricingException("plan id must be > 0");
@@ -146,7 +147,7 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			if (plan != null) {
 				return mapper.map(plan, PlanDto.class);
 			} else {
-				return null;
+				throw new PricingNotFoundException("Plan with id " + planId + " is not found");
 			}
 		} else {
 			throw new PricingException("The Plan Id must be greater than 0");

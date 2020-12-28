@@ -28,6 +28,7 @@ import com.onebill.pricing.entities.ProductPrice;
 import com.onebill.pricing.entities.ProductService;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
+import com.onebill.pricing.exceptions.PricingNotFoundException;
 
 import javassist.NotFoundException;
 
@@ -136,7 +137,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 
 						if (dto.getServices() != null) {
 							List<ProductServiceDto> list = dto.getServices();
-							Set<ProductServiceDto> set = new HashSet<ProductServiceDto>(list);
+							Set<ProductServiceDto> set = new HashSet<>(list);
 							if (list.size() == set.size()) {
 								for (ProductServiceDto p : list) {
 									if (servDao.getService(p.getServiceId()) == null) {
@@ -171,7 +172,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public ProductDto removeProductById(int productId) throws NotFoundException {
+	public ProductDto removeProductById(int productId) {
 
 		if (productId > 0) {
 			prodServDao.removeAllProductServicesByProductId(productId);
@@ -179,11 +180,10 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			priceDao.removeProductPriceById(productId);
 			expDao.removeAddlPriceByProdId(productId);
 			Product product = productdao.removeProductById(productId);
-			logger.info("Product Deleted" + product);
 			if (product != null) {
 				return mapper.map(product, ProductDto.class);
 			} else {
-				throw new NotFoundException("The product with id " + productId + " is not found");
+				throw new PricingNotFoundException("The product with id " + productId + " is not found");
 			}
 		} else {
 			throw new PricingException("Product Id must be greater than 0");
@@ -192,7 +192,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public ProductDto updateProduct(ProductDto dto) throws NotFoundException {
+	public ProductDto updateProduct(ProductDto dto) {
 		if (dto.getProductId() > 0 && dto.getProductName().matches("[A-Za-z0-9 ]{2,25}")) {
 			Product product = mapper.map(dto, Product.class);
 			product = productdao.updateProduct(product);
@@ -200,7 +200,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 				logger.info("Product Updated" + product);
 				return mapper.map(product, ProductDto.class);
 			} else {
-				throw new NotFoundException("There is no product with id " + dto.getProductId());
+				throw new PricingNotFoundException("There is no product with id " + dto.getProductId());
 
 			}
 		} else {
@@ -211,14 +211,13 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public ProductDto getProduct(int productId) throws NotFoundException {
+	public ProductDto getProduct(int productId) {
 		if (productId > 0) {
 			Product product = productdao.getProduct(productId);
-			logger.info(product);
 			if (product != null) {
 				return mapper.map(product, ProductDto.class);
 			} else {
-				throw new NotFoundException("Product with id " + productId + " doesnt exist");
+				throw new PricingNotFoundException("Product with id " + productId + " doesnt exist");
 
 			}
 		} else {
@@ -227,7 +226,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public List<ProductDto> getAllProducts() throws NotFoundException {
+	public List<ProductDto> getAllProducts() {
 
 		List<Product> list = productdao.getAllProducts();
 		List<ProductDto> dtolist = new ArrayList<>();
@@ -237,7 +236,7 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 			}
 			return dtolist;
 		} else {
-			throw new NotFoundException("There Are No Products");
+			throw new PricingNotFoundException("There Are No Products");
 		}
 	}
 
@@ -448,13 +447,13 @@ public class ProductManagerServiceImpl implements ProductManagerService {
 	}
 
 	@Override
-	public ProductDto getProductByName(String text) throws NotFoundException {
+	public ProductDto getProductByName(String text) {
 
 		Product prod = productdao.getProductByName(text);
 		if (prod != null) {
 			return mapper.map(prod, ProductDto.class);
 		} else {
-			throw new NotFoundException("The product with name " + text + " is not found");
+			throw new PricingNotFoundException("The product with name " + text + " is not found");
 		}
 
 	}

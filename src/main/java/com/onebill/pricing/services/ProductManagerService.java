@@ -18,15 +18,15 @@ public interface ProductManagerService {
 
 	ProductDto addProduct(ProductDto dto);
 
-	ProductDto removeProductById(int productId) throws NotFoundException;
+	ProductDto removeProductById(int productId);
 
-	ProductDto updateProduct(ProductDto dto) throws NotFoundException;
+	ProductDto updateProduct(ProductDto dto);
 
-	ProductDto getProduct(int productId) throws NotFoundException;
+	ProductDto getProduct(int productId);
 
-	List<ProductDto> getAllProducts() throws NotFoundException;
+	List<ProductDto> getAllProducts();
 
-	ProductDto getProductByName(String text) throws NotFoundException;
+	ProductDto getProductByName(String text);
 
 	List<ProductDto> searchProductByName(String text) throws NotFoundException;
 

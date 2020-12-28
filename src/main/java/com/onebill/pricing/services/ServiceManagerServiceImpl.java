@@ -15,6 +15,7 @@ import com.onebill.pricing.entities.Product;
 import com.onebill.pricing.entities.Service;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
+import com.onebill.pricing.exceptions.PricingNotFoundException;
 
 import javassist.NotFoundException;
 
@@ -48,7 +49,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 					}
 				} else {
 					throw new PricingConflictsException(
-							"The service Name Must contain be only numbers,letters and spaces and must be within 2 and 25 characters");
+							"The service Name Must contain only numbers,letters and spaces and must be within 2 and 25 characters");
 				}
 			} else {
 				throw new PricingConflictsException(
@@ -125,8 +126,10 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 			for (Service s : list) {
 				dtolist.add(mapper.map(s, ServiceDto.class));
 			}
+			return dtolist;
+		} else {
+			throw new PricingNotFoundException("There are no services");
 		}
-		return dtolist;
 	}
 
 	@Override
@@ -149,12 +152,12 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 	}
 
 	@Override
-	public ServiceDto getServiceByName(String text) throws NotFoundException {
+	public ServiceDto getServiceByName(String text) {
 		Service service = servicedao.getServiceByName(text);
 		if (service != null) {
 			return mapper.map(service, ServiceDto.class);
 		} else {
-			throw new NotFoundException("Service With Name " + text + " doesn't exist");
+			throw new PricingNotFoundException("Service With Name " + text + " doesn't exist");
 		}
 	}
 }
