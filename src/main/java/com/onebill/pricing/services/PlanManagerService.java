@@ -18,11 +18,11 @@ public interface PlanManagerService {
 
 	PlanDto getPlan(int planId);
 
-	PlanDto getPlanByName(String text) throws NotFoundException;
+	PlanDto getPlanByName(String text);
 
-	List<PlanDto> searchPlanByName(String text) throws NotFoundException;
+	List<PlanDto> searchPlanByName(String text);
 
-	int getProductIdByPlanId(int planId) throws NotFoundException;
+	int getProductIdByPlanId(int planId);
 
 	List<PlanDto> getAllPlans();
 

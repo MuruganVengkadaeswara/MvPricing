@@ -163,8 +163,10 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			for (Plan p : list) {
 				dtolist.add(mapper.map(p, PlanDto.class));
 			}
+			return dtolist;
+		} else {
+			throw new PricingNotFoundException("There are no plans");
 		}
-		return dtolist;
 	}
 
 	@Override
@@ -175,32 +177,34 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			for (Product p : list) {
 				dtolist.add(mapper.map(p, ProductDto.class));
 			}
+			return dtolist;
+		} else {
+			throw new PricingNotFoundException("There are no products to this plan");
 		}
-		return dtolist;
 	}
 
 	@Override
-	public int getProductIdByPlanId(int planId) throws NotFoundException {
+	public int getProductIdByPlanId(int planId) {
 		int pId = plandao.getProductIdByPlanId(planId);
 		if (pId > 0) {
 			return pId;
 		} else {
-			throw new NotFoundException("Plan not found");
+			throw new PricingNotFoundException("Plan not found");
 		}
 	}
 
 	@Override
-	public PlanDto getPlanByName(String text) throws NotFoundException {
+	public PlanDto getPlanByName(String text) {
 		Plan plan = plandao.getPlanByName(text);
 		if (plan != null) {
 			return mapper.map(plan, PlanDto.class);
 		} else {
-			throw new NotFoundException("Plan With Name " + text + "is not found");
+			throw new PricingNotFoundException("Plan With Name " + text + "is not found");
 		}
 	}
 
 	@Override
-	public List<PlanDto> searchPlanByName(String text) throws NotFoundException {
+	public List<PlanDto> searchPlanByName(String text) {
 		List<Plan> list = plandao.searchPlanByName(text);
 		List<PlanDto> dtoList = new ArrayList<>();
 		if (!list.isEmpty()) {
@@ -209,7 +213,7 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 			}
 			return dtoList;
 		} else {
-			throw new NotFoundException("There are no plans like " + text);
+			throw new PricingNotFoundException("There are no plans like " + text);
 		}
 	}
 

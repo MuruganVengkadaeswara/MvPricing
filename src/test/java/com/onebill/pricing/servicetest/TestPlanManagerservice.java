@@ -3,6 +3,9 @@ package com.onebill.pricing.servicetest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.jboss.logging.Logger;
@@ -37,6 +40,8 @@ import com.onebill.pricing.exceptions.PricingNotFoundException;
 import com.onebill.pricing.services.PlanManagerService;
 import com.onebill.pricing.services.PlanManagerServiceImpl;
 import com.onebill.pricing.services.ProductManagerService;
+
+import javassist.NotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestPlanManagerservice {
@@ -200,12 +205,30 @@ public class TestPlanManagerservice {
 		Mockito.when(plandao.getPlanById(9)).thenReturn(null);
 		service.getPlan(9);
 	}
-	
+
 	@Test
 	public void getAllPlansWithEmptyDb() {
-		
+		expectedEx.expect(PricingNotFoundException.class);
+		expectedEx.expectMessage("There are no plans");
+		List<Plan> list = new ArrayList<Plan>();
+		Mockito.when(plandao.getAllPlans()).thenReturn(list);
+		service.getAllPlans();
 	}
 
+	@Test
+	public void getAllNonExistingProductsOfPlan() throws NotFoundException {
+		expectedEx.expect(PricingNotFoundException.class);
+		expectedEx.expectMessage("There are no products to this plan");
+		List<Product> list = new ArrayList<>();
+		Mockito.when(plandao.getAllProductsOfPlan(5)).thenReturn(list);
+		service.getAllProductsOfPlan(5);
+	}
+
+	
+	@Test
+	public void testGetNonExistingPlanByName() {
+		Mockito.when(methodCall)
+	}
 	// @Test
 	// public void addPlanWithoutProduct() {
 	// expectedEx.expect(PricingConflictsException.class);
