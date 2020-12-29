@@ -18,6 +18,7 @@ import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ResponseDto;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.exceptions.PricingException;
+import com.onebill.pricing.exceptions.PricingNotFoundException;
 import com.onebill.pricing.services.ServiceManagerService;
 
 import javassist.NotFoundException;
@@ -30,14 +31,14 @@ public class ServiceController {
 	ServiceManagerService service;
 
 	@GetMapping("/services")
-	public ResponseDto getAllServices() throws NotFoundException {
+	public ResponseDto getAllServices() {
 		ResponseDto resp = new ResponseDto();
 		List<ServiceDto> dtolist = service.getAllServices();
 		if (!dtolist.isEmpty()) {
 			resp.setResponse(dtolist);
 			return resp;
 		} else {
-			throw new NotFoundException("There Are no services");
+			throw new PricingNotFoundException("There Are no services");
 		}
 	}
 
@@ -49,20 +50,20 @@ public class ServiceController {
 			resp.setResponse(dto);
 			return resp;
 		} else {
-			throw new NotFoundException("Service with id " + id + " is not found");
+			throw new PricingNotFoundException("Service with id " + id + " is not found");
 
 		}
 	}
 
 	@GetMapping("/service")
-	public ResponseDto getService(String serviceName) throws NotFoundException {
+	public ResponseDto getService(String serviceName)  {
 		ResponseDto resp = new ResponseDto();
 		ServiceDto dto = service.getServiceByName(serviceName);
 		if (dto != null) {
 			resp.setResponse(dto);
 			return resp;
 		} else {
-			throw new NotFoundException("Service with name " + serviceName + " is not found");
+			throw new PricingNotFoundException("Service with name " + serviceName + " is not found");
 
 		}
 	}

@@ -1,12 +1,7 @@
 package com.onebill.pricing.servicetest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 import org.jboss.logging.Logger;
 import org.junit.Before;
@@ -29,21 +24,18 @@ import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductPriceDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dao.ServiceDao;
+import com.onebill.pricing.dao.ServiceDaoImpl;
+import com.onebill.pricing.dto.AdditionalPriceDto;
 import com.onebill.pricing.dto.ProductDto;
 import com.onebill.pricing.dto.ProductPriceDto;
 import com.onebill.pricing.dto.ProductServiceDto;
-import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.Product;
-import com.onebill.pricing.entities.ProductService;
 import com.onebill.pricing.entities.Service;
 import com.onebill.pricing.exceptions.PricingConflictsException;
 import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.exceptions.PricingNotFoundException;
 import com.onebill.pricing.services.ProductManagerService;
 import com.onebill.pricing.services.ProductManagerServiceImpl;
-import com.onebill.pricing.services.ServiceManagerService;
-
-import javassist.NotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestProductManagerService {
@@ -88,7 +80,23 @@ public class TestProductManagerService {
 		expectedEx.expectMessage("Please Provide a product Name");
 		ProductDto dto = new ProductDto();
 		prodservice.addProduct(dto);
+	}
 
+	@Test
+	public void addProductNameWithMoreThan25Chars() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("Product Name must be within 25 characters");
+		ProductDto dto = new ProductDto();
+		dto.setProductName("ALFHOUGHWORNVJVNZKDNVLNDVlKNDVLKNDLVKNKLDNV");
+		prodservice.addProduct(dto);
+	}
+
+	@Test
+	public void testAddproductWithNullInput() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("Product Cannot be null");
+		ProductDto dto = null;
+		prodservice.addProduct(dto);
 	}
 
 	@Test
@@ -103,12 +111,33 @@ public class TestProductManagerService {
 	}
 
 	@Test
-	public void addProductWithInvalidName() {
-		expectedEx.expect(PricingConflictsException.class);
-		expectedEx.expectMessage("Product Name must be letters numbers and spaces and be within 25 characters");
+	public void testAddProduct() {
 		ProductDto dto = new ProductDto();
-		dto.setProductName("*(#^(*^@($*^$*(@$&(*$^");
-		prodservice.addProduct(dto);
+		dto.setProductName("Airtel");
+
+		ProductPriceDto price = new ProductPriceDto();
+		price.setPrice(400);
+
+		dto.setPrice(price);
+
+		ProductServiceDto serv = new ProductServiceDto();
+		serv.setFreeUnits(400);
+		serv.setServiceId(1);
+		serv.setUnitType("sms");
+		serv.setServiceId(1);
+
+		List<ProductServiceDto> list = new ArrayList<>();
+		list.add(serv);
+
+		List<AdditionalPriceDto> plist = new ArrayList<>();
+
+		dto.setServices(list);
+		dto.setAdditionalPrices(plist);
+
+		servDao = mock(ServiceDaoImpl.class);
+
+		Mockito.when(servDao.getService(anyInt())).thenReturn(new Service());
+
 	}
 
 	@Test
@@ -255,11 +284,6 @@ public class TestProductManagerService {
 		expectedEx.expect(PricingNotFoundException.class);
 		expectedEx.expectMessage("There Are No Products");
 		prodservice.getAllProducts();
-	}
-
-	@Test
-	public void testAddProductService() {
-
 	}
 
 }

@@ -42,35 +42,39 @@ public class PlanManagerServiceImpl implements PlanManagerService {
 
 	@Override
 	public PlanDto addPlan(PlanDto dto) {
-		if (verifyPlanDto(dto)) {
-			Plan plan = new Plan();
-			if (dto.getProduct() != null) {
-				ProductDto pdto = productService.addProduct(dto.getProduct());
-				BeanUtils.copyProperties(dto, plan, "product");
-				plan.setProductId(pdto.getProductId());
+		if (dto != null) {
+			if (verifyPlanDto(dto)) {
+				Plan plan = new Plan();
+				if (dto.getProduct() != null) {
+					ProductDto pdto = productService.addProduct(dto.getProduct());
+					BeanUtils.copyProperties(dto, plan, "product");
+					plan.setProductId(pdto.getProductId());
+				} else {
+					// if (plandao.getPlanIdByProductId(dto.getProductId()) < 0) {
+					plan.setPlanName(dto.getPlanName());
+					plan.setProductId(dto.getProductId());
+					plan.setPlanType(dto.getPlanType());
+					// } else {
+					// throw new PricingConflictsException(
+					// "There is already a plan with product Id " + dto.getProductId());
+					// }
+				}
+				plan = plandao.addPlan(plan);
+				if (plan != null) {
+					return mapper.map(getPlan(plan.getPlanId()), PlanDto.class);
+				} else {
+					return null;
+				}
 			} else {
-				// if (plandao.getPlanIdByProductId(dto.getProductId()) < 0) {
-				plan.setPlanName(dto.getPlanName());
-				plan.setProductId(dto.getProductId());
-				plan.setPlanType(dto.getPlanType());
-				// } else {
-				// throw new PricingConflictsException(
-				// "There is already a plan with product Id " + dto.getProductId());
-				// }
-			}
-			plan = plandao.addPlan(plan);
-			if (plan != null) {
-				return mapper.map(getPlan(plan.getPlanId()), PlanDto.class);
-			} else {
-				return null;
+				throw new PricingConflictsException("Unknown Error while adding Plan");
 			}
 		} else {
-			throw new PricingConflictsException("Unknown Error while adding Plan");
+			throw new PricingConflictsException("Plan Cannot be null");
 		}
 
 	}
 
-	public boolean verifyPlanDto(PlanDto dto) {
+	private boolean verifyPlanDto(PlanDto dto) {
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
 
 		if (dto.getPlanName() != null) {

@@ -48,32 +48,37 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	@Override
 	public BundleDto addBundle(BundleDto dto) {
 
-		if (verifyBundleDto(dto)) {
-			Bundle bundle = new Bundle();
-			BeanUtils.copyProperties(dto, bundle, "bundleProducts");
-			bundle = bundleDao.addBundle(bundle);
+		if (dto != null) {
+			if (verifyBundleDto(dto)) {
+				Bundle bundle = new Bundle();
+				BeanUtils.copyProperties(dto, bundle, "bundleProducts");
+				bundle = bundleDao.addBundle(bundle);
 
-			List<BundleProductDto> list = dto.getBundleProducts();
+				List<BundleProductDto> list = dto.getBundleProducts();
 
-			if (bundle != null) {
-				if (list != null) {
-					for (BundleProductDto bp : list) {
-						BundleProduct p = mapper.map(bp, BundleProduct.class);
-						p.setBundleId(bundle.getBundleId());
-						bundleProdDao.addBundleProduct(p);
+				if (bundle != null) {
+					if (list != null) {
+						for (BundleProductDto bp : list) {
+							BundleProduct p = mapper.map(bp, BundleProduct.class);
+							p.setBundleId(bundle.getBundleId());
+							bundleProdDao.addBundleProduct(p);
+						}
 					}
+					return mapper.map(bundleDao.getBundle(bundle.getBundleId()), BundleDto.class);
+				} else {
+					return null;
 				}
-				return mapper.map(bundleDao.getBundle(bundle.getBundleId()), BundleDto.class);
 			} else {
-				return null;
+				throw new PricingConflictsException("Unknown error while adding bundle");
 			}
+
 		} else {
-			throw new PricingConflictsException("Unknown error while adding bundle");
+			throw new PricingConflictsException("Bundle cannot be null");
 		}
 
 	}
 
-	public boolean verifyBundleDto(BundleDto dto) {
+	private boolean verifyBundleDto(BundleDto dto) {
 
 		String[] plantypes = new String[] { "monthly", "yearly", "weekly", "daily" };
 
@@ -83,12 +88,13 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 				Set<BundleProductDto> set = new HashSet<>(list);
 				for (BundleProductDto p : list) {
 					if (prodDao.getProduct(p.getProductId()) == null) {
-						throw new PricingConflictsException("The product With Id " + p.getProductId() + " Doesn't exist");
+						throw new PricingConflictsException(
+								"The product With Id " + p.getProductId() + " Doesn't exist");
 					}
 				}
 				if (list.size() == set.size()) {
 					if (bundleDao.getBundleByName(dto.getBundleName()) == null) {
-						if (dto.getBundleName().matches("[A-Za-z0-9 ]{2,25}")) {
+						if (dto.getBundleName().length() < 25 && dto.getBundleName().length() > 2) {
 							if (Arrays.stream(plantypes).anyMatch(dto.getBundleType().toLowerCase()::contains)) {
 								return true;
 							} else {
@@ -96,11 +102,11 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 										"The bundle Type must either be monthly,yearly,weekly or daily");
 							}
 						} else {
-							throw new PricingConflictsException(
-									"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
+							throw new PricingConflictsException("Bundle Name Must be within 2 and 25 characters");
 						}
 					} else {
-						throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + " Already exists");
+						throw new PricingConflictsException(
+								"Bundle with name " + dto.getBundleName() + " Already exists");
 					}
 				} else {
 					throw new PricingConflictsException("Trying to add Duplicate Products , please Remove duplicates");
@@ -108,11 +114,10 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 
 			} else {
 				throw new PricingConflictsException("Bundle Products Cannot be null");
-			}	
+			}
 		} else {
 			throw new PricingConflictsException("Bundle Name Cannot Be null");
 		}
-		
 
 	}
 
@@ -161,13 +166,13 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 	}
 
 	@Override
-	public BundleDto removeBundel(int id) throws NotFoundException {
+	public BundleDto removeBundel(int id){
 		if (id > 0) {
 			Bundle bundle = bundleDao.removeBundle(id);
 			if (bundle != null) {
 				return mapper.map(bundle, BundleDto.class);
 			} else {
-				throw new NotFoundException("Bundle with Id " + id + " is not found");
+				throw new PricingNotFoundException("Bundle with Id " + id + " is not found");
 			}
 		} else {
 			throw new PricingException("Bundle Id must be greater than 0");
@@ -250,12 +255,14 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 			for (Product p : list) {
 				dtolist.add(mapper.map(p, ProductDto.class));
 			}
+			return dtolist;
+		} else {
+			throw new PricingNotFoundException("There are no products to this bundle");
 		}
-		return dtolist;
 	}
 
 	@Override
-	public BundleDto getBundleByName(String text) throws NotFoundException {
+	public BundleDto getBundleByName(String text) {
 
 		Bundle bundle = bundleDao.getBundleByName(text);
 		if (bundle != null) {
@@ -263,7 +270,7 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 		}
 
 		else {
-			throw new NotFoundException("Bundle with name " + text + " is not found");
+			throw new PricingNotFoundException("Bundle with name " + text + " is not found");
 		}
 
 	}

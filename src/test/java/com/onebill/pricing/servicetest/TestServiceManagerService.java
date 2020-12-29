@@ -1,7 +1,5 @@
 package com.onebill.pricing.servicetest;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +17,6 @@ import org.modelmapper.ModelMapper;
 
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dao.ServiceDao;
-import com.onebill.pricing.dao.ServiceDaoImpl;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.ProductService;
 import com.onebill.pricing.entities.Service;
@@ -47,17 +44,25 @@ public class TestServiceManagerService {
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
 
-	private Service serv;
+	Service serv;
 
-	private ServiceDto servDto;
+	ServiceDto servDto;
 
 	private ModelMapper mapper;
 
-	Logger log = Logger.getLogger(TestServiceManager.class);
+	Logger log = Logger.getLogger(TestServiceManagerService.class);
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(service);
+	}
+
+	@Test
+	public void testAddServiceWithNullInput() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("Service Cannot be null");
+		ServiceDto dto = null;
+		service.addService(dto);
 	}
 
 	@Test
@@ -71,8 +76,7 @@ public class TestServiceManagerService {
 	@Test
 	public void testAddServiceWithLessThan2Chars() {
 		expectedEx.expect(PricingConflictsException.class);
-		expectedEx.expectMessage(
-				"The service Name Must contain only numbers,letters and spaces and must be within 2 and 25 characters");
+		expectedEx.expectMessage("The service Name must be within 2 and 25 characters");
 		ServiceDto dto = new ServiceDto();
 		dto.setServiceName("e");
 		service.addService(dto);
@@ -84,19 +88,8 @@ public class TestServiceManagerService {
 		expectedEx.expectMessage("The service with name Hello already exists");
 		ServiceDto dto = new ServiceDto();
 		dto.setServiceName("Hello");
-
 		Mockito.when(servDao.getServiceByName("Hello")).thenReturn(new Service());
 		service.addService(dto);
-	}
-
-	@Test
-	public void testAddInvalidServiceName() {
-		expectedEx.expect(PricingConflictsException.class);
-		expectedEx.expectMessage(
-				"The service Name Must contain only numbers,letters and spaces and must be within 2 and 25 characters");
-		servDto = new ServiceDto();
-		servDto.setServiceName("OIT&(&($@&(@$($@");
-		service.addService(servDto);
 	}
 
 	@Test
@@ -158,20 +151,6 @@ public class TestServiceManagerService {
 	}
 
 	@Test
-	public void testGetAllServices() {
-		List<Service> list = new ArrayList<>();
-		Service s1 = new Service();
-		s1.setServiceId(1);
-		s1.setServiceName("DUMMY");
-		list.add(s1);
-		servDao = Mockito.mock(ServiceDaoImpl.class);
-		Mockito.when(servDao.getAllServices()).thenReturn(list);
-		List<ServiceDto> dtolist = service.getAllServices();
-		assertEquals(1, dtolist.size());
-
-	}
-
-	@Test
 	public void testGetAllProductswithNegativeServiceId() {
 		expectedEx.expect(PricingException.class);
 		expectedEx.expectMessage("service Id must be greater than 0");
@@ -186,9 +165,10 @@ public class TestServiceManagerService {
 		service.getServiceByName("Hello");
 	}
 
-	@Test(expected = PricingConflictsException.class)
+	@Test
 	public void testAddServiceWithMoreThan25Characters() {
-
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("The service Name must be within 2 and 25 characters");
 		ServiceDto serv = new ServiceDto();
 		serv.setServiceName("Ajhsjahfdjhsdjhkshdkfhdslsasdasdgsg");
 		service.addService(serv);
@@ -200,20 +180,6 @@ public class TestServiceManagerService {
 		serv.setServiceId(id);
 		serv.setServiceName(name);
 		return serv;
-	}
-
-	// @Test
-	public void testGetServiceById() throws NotFoundException {
-
-		serv = new Service();
-		serv.setServiceId(1);
-		serv.setServiceName("dummy");
-
-		Mockito.when(servDao.getService(1)).thenReturn(serv);
-
-		ServiceDto retrieved = service.getService(1);
-
-		assertEquals(serv.getServiceId(), retrieved.getServiceId());
 	}
 
 }

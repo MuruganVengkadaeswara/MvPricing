@@ -1,7 +1,5 @@
 package com.onebill.pricing.servicetest;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +16,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.Mockito.*;
 
 import com.onebill.pricing.dao.PlanDao;
-import com.onebill.pricing.dao.PlanDaoImpl;
 import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.PlanDto;
@@ -41,7 +37,7 @@ import javassist.NotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestPlanManagerservice {
-	
+
 	@Mock
 	EntityManager manager;
 
@@ -68,6 +64,14 @@ public class TestPlanManagerservice {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+	}
+
+	@Test
+	public void testAddPlanWithNullInput() {
+		expectedEx.expect(PricingConflictsException.class);
+		expectedEx.expectMessage("Plan Cannot be null");
+		PlanDto dto = null;
+		service.addPlan(dto);
 	}
 
 	@Test
@@ -171,8 +175,20 @@ public class TestPlanManagerservice {
 	}
 
 	@Test
-	public void testUpdateNonExistingPlan() {
+	public void testAddPlan() {
+		PlanDto dto = new PlanDto();
+		dto.setPlanName("dummy");
+		dto.setPlanType("Monthly");
+		dto.setProductId(1);
+		Mockito.when(prodDao.getProduct(1)).thenReturn(new Product());
+		service.addPlan(dto);
+	}
 
+	@Test
+	public void getProductIdByNonExistingPlanId() {
+		expectedEx.expect(PricingNotFoundException.class);
+		expectedEx.expectMessage("Plan not found");
+		service.getProductIdByPlanId(99);
 	}
 
 	@Test
@@ -240,16 +256,5 @@ public class TestPlanManagerservice {
 		when(plandao.searchPlanByName("Hello")).thenReturn(list);
 		service.searchPlanByName("Hello");
 	}
-
-//	@Test
-//	public void getExistingPlanByName() {
-//		Plan p = new Plan();
-//		p.setPlanName("Airtel Monthly");
-//		p.setPlanId(1);
-//		plandao = mock(PlanDaoImpl.class);
-//		Mockito.when(plandao.getPlanByName("Airtel Monthly")).thenReturn(p);
-//		PlanDto dto = service.getPlanByName("Airtel Monthly");
-//		assertEquals(p.getPlanName(), dto.getPlanName());
-//	}
 
 }

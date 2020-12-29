@@ -36,27 +36,31 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 	@Override
 	public ServiceDto addService(ServiceDto dto) {
 
-		if (dto.getServiceName() != null) {
-			if (servicedao.getServiceByName(dto.getServiceName()) == null) {
-				if (dto.getServiceName().matches("[A-Za-z0-9 ]{2,25}")) {
-					Service service = mapper.map(dto, Service.class);
-					servicedao.addService(service);
-					if (service != null) {
-						logger.info("Service added" + service);
-						return mapper.map(service, ServiceDto.class);
+		if (dto != null) {
+
+			if (dto.getServiceName() != null) {
+				if (servicedao.getServiceByName(dto.getServiceName()) == null) {
+					if (dto.getServiceName().length() < 25 && dto.getServiceName().length() > 2) {
+						Service service = mapper.map(dto, Service.class);
+						servicedao.addService(service);
+						if (service != null) {
+							logger.info("Service added" + service);
+							return mapper.map(service, ServiceDto.class);
+						} else {
+							return null;
+						}
 					} else {
-						return null;
+						throw new PricingConflictsException("The service Name must be within 2 and 25 characters");
 					}
 				} else {
 					throw new PricingConflictsException(
-							"The service Name Must contain only numbers,letters and spaces and must be within 2 and 25 characters");
+							"The service with name " + dto.getServiceName() + " already exists");
 				}
 			} else {
-				throw new PricingConflictsException(
-						"The service with name " + dto.getServiceName() + " already exists");
+				throw new PricingConflictsException("Please Provide a service Name");
 			}
 		} else {
-			throw new PricingConflictsException("Please Provide a service Name");
+			throw new PricingConflictsException("Service Cannot be null");
 		}
 
 	}
