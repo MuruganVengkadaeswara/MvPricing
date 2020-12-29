@@ -15,11 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import com.onebill.pricing.dao.PlanDao;
+import com.onebill.pricing.dao.PlanDaoImpl;
 import com.onebill.pricing.dao.ProductDao;
 import com.onebill.pricing.dao.ProductServiceDao;
 import com.onebill.pricing.dto.PlanDto;
@@ -61,10 +66,8 @@ public class TestPlanManagerservice {
 
 	Logger logger = Logger.getLogger(TestPlanManagerservice.class);
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-	}
+	@Autowired
+	ModelMapper mapper;
 
 	@Test
 	public void testAddPlanWithNullInput() {
@@ -177,11 +180,17 @@ public class TestPlanManagerservice {
 	@Test
 	public void testAddPlan() {
 		PlanDto dto = new PlanDto();
+		dto.setPlanId(1);
 		dto.setPlanName("dummy");
 		dto.setPlanType("Monthly");
 		dto.setProductId(1);
-		Mockito.when(prodDao.getProduct(1)).thenReturn(new Product());
-		service.addPlan(dto);
+		Plan plan = new Plan();
+		BeanUtils.copyProperties(dto, plan);
+		when(prodDao.getProduct(1)).thenReturn(new Product());
+		when(plandao.addPlan(any())).thenReturn(plan);
+		PlanDto newdto = service.addPlan(dto);
+		logger.info(newdto);
+		logger.info(plandao.addPlan(plan));
 	}
 
 	@Test

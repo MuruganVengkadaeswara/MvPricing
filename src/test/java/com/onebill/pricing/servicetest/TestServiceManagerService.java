@@ -1,5 +1,7 @@
 package com.onebill.pricing.servicetest;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 
 import com.onebill.pricing.dao.ProductServiceDao;
+import com.onebill.pricing.dao.ProductServiceDaoImpl;
 import com.onebill.pricing.dao.ServiceDao;
+import com.onebill.pricing.dao.ServiceDaoImpl;
 import com.onebill.pricing.dto.ServiceDto;
 import com.onebill.pricing.entities.ProductService;
 import com.onebill.pricing.entities.Service;
@@ -32,14 +37,14 @@ import javassist.NotFoundException;
 @RunWith(MockitoJUnitRunner.class)
 public class TestServiceManagerService {
 
-	@Mock
-	ServiceDao servDao;
-
-	@Mock
-	ProductServiceDao prodServDao;
-
 	@InjectMocks
-	private ServiceManagerService service = new ServiceManagerServiceImpl();
+	ServiceManagerService service = new ServiceManagerServiceImpl();
+
+	@Mock
+	ServiceDaoImpl servDao;
+
+	@Mock
+	ProductServiceDaoImpl prodServDao;
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -48,14 +53,10 @@ public class TestServiceManagerService {
 
 	ServiceDto servDto;
 
-	private ModelMapper mapper;
+	@Mock
+	ModelMapper mapper = new ModelMapper();
 
-	Logger log = Logger.getLogger(TestServiceManagerService.class);
-
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(service);
-	}
+//	Logger log = Logger.getLogger(TestServiceManagerService.class);
 
 	@Test
 	public void testAddServiceWithNullInput() {
@@ -63,6 +64,27 @@ public class TestServiceManagerService {
 		expectedEx.expectMessage("Service Cannot be null");
 		ServiceDto dto = null;
 		service.addService(dto);
+	}
+
+//	@Before
+//	public void setup() {
+//		MockitoAnnotations.initMocks(this);
+//	}
+
+	@Test
+	public void testAddService() {
+		ServiceDto dto = new ServiceDto();
+		dto.setServiceName("dummy");
+
+		Service s = new Service();
+		BeanUtils.copyProperties(dto, s);
+		s.setServiceId(1);
+
+		servDao = Mockito.mock(ServiceDaoImpl.class);
+//		Mockito.when(servDao.addService(Mockito.any(Service.class))).thenReturn(s);
+		Mockito.when(servDao.addService(s)).thenReturn(s);
+		service.addService(dto);
+//		assertNotNull(service.addService(dto));
 	}
 
 	@Test
