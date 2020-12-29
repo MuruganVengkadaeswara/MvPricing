@@ -100,7 +100,7 @@ public class BundleManagerServiceImpl implements BundleManagerService {
 									"Bundle Name Must be only numbers and characters andd within 2 and 25 characters");
 						}
 					} else {
-						throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + "Already exists");
+						throw new PricingConflictsException("Bundle with name " + dto.getBundleName() + " Already exists");
 					}
 				} else {
 					throw new PricingConflictsException("Trying to add Duplicate Products , please Remove duplicates");
