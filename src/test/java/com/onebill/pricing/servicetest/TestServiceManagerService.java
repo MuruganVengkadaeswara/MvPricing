@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.logging.Logger;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +31,6 @@ import com.onebill.pricing.exceptions.PricingException;
 import com.onebill.pricing.exceptions.PricingNotFoundException;
 import com.onebill.pricing.services.ServiceManagerService;
 import com.onebill.pricing.services.ServiceManagerServiceImpl;
-import com.sun.istack.logging.Logger;
 
 import javassist.NotFoundException;
 
@@ -38,25 +38,26 @@ import javassist.NotFoundException;
 public class TestServiceManagerService {
 
 	@InjectMocks
-	ServiceManagerService service = new ServiceManagerServiceImpl();
+	ServiceManagerServiceImpl service;
 
 	@Mock
-	ServiceDaoImpl servDao;
+	ServiceDao servicedao;
 
 	@Mock
-	ProductServiceDaoImpl prodServDao;
+	ProductServiceDao prodServDao;
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
+
+	Logger logger = Logger.getLogger(TestServiceManagerService.class);
 
 	Service serv;
 
 	ServiceDto servDto;
 
 	@Mock
-	ModelMapper mapper = new ModelMapper();
+	ModelMapper mapper;
 
-//	Logger log = Logger.getLogger(TestServiceManagerService.class);
 
 	@Test
 	public void testAddServiceWithNullInput() {
@@ -72,19 +73,34 @@ public class TestServiceManagerService {
 //	}
 
 	@Test
+	public void testGetService() throws NotFoundException {
+		Service s = new Service();
+		s.setServiceId(1);
+		s.setServiceName("dummy");
+		
+		ServiceDto dto = new ServiceDto();
+		dto.setServiceId(1);
+		dto.setServiceName("dummy");
+		
+		Mockito.when(servicedao.getService(Mockito.anyInt())).thenReturn(s);
+		Mockito.when(service.getService(1)).thenReturn(dto);
+		assertNotNull(service.getService(1));
+	}
+
+	@Test
 	public void testAddService() {
 		ServiceDto dto = new ServiceDto();
 		dto.setServiceName("dummy");
+		dto.setServiceId(1);
 
 		Service s = new Service();
-		BeanUtils.copyProperties(dto, s);
 		s.setServiceId(1);
+		s.setServiceName("dummy");
 
-		servDao = Mockito.mock(ServiceDaoImpl.class);
-//		Mockito.when(servDao.addService(Mockito.any(Service.class))).thenReturn(s);
-		Mockito.when(servDao.addService(s)).thenReturn(s);
+		Mockito.when(servicedao.addService(Mockito.any())).thenReturn(s);
+		Mockito.when(service.addService(dto)).thenReturn(dto);
 		service.addService(dto);
-//		assertNotNull(service.addService(dto));
+		assertNotNull(service.addService(dto));
 	}
 
 	@Test
@@ -110,7 +126,7 @@ public class TestServiceManagerService {
 		expectedEx.expectMessage("The service with name Hello already exists");
 		ServiceDto dto = new ServiceDto();
 		dto.setServiceName("Hello");
-		Mockito.when(servDao.getServiceByName("Hello")).thenReturn(new Service());
+		Mockito.when(servicedao.getServiceByName("Hello")).thenReturn(new Service());
 		service.addService(dto);
 	}
 
@@ -168,7 +184,7 @@ public class TestServiceManagerService {
 		expectedEx.expect(PricingNotFoundException.class);
 		expectedEx.expectMessage("There are no services");
 		List<Service> list = new ArrayList<>();
-		Mockito.when(servDao.getAllServices()).thenReturn(list);
+		Mockito.when(servicedao.getAllServices()).thenReturn(list);
 		service.getAllServices();
 	}
 
@@ -183,7 +199,7 @@ public class TestServiceManagerService {
 	public void testGetNonExistingServiceByName() {
 		expectedEx.expect(PricingNotFoundException.class);
 		expectedEx.expectMessage("Service With Name Hello doesn't exist");
-		Mockito.when(servDao.getServiceByName("Hello")).thenReturn(null);
+		Mockito.when(servicedao.getServiceByName("Hello")).thenReturn(null);
 		service.getServiceByName("Hello");
 	}
 
