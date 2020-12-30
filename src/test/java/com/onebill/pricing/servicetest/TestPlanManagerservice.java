@@ -66,7 +66,7 @@ public class TestPlanManagerservice {
 
 	Logger logger = Logger.getLogger(TestPlanManagerservice.class);
 
-	@Autowired
+	@Mock
 	ModelMapper mapper;
 
 	@Test
@@ -178,22 +178,6 @@ public class TestPlanManagerservice {
 	}
 
 	@Test
-	public void testAddPlan() {
-		PlanDto dto = new PlanDto();
-		dto.setPlanId(1);
-		dto.setPlanName("dummy");
-		dto.setPlanType("Monthly");
-		dto.setProductId(1);
-		Plan plan = new Plan();
-		BeanUtils.copyProperties(dto, plan);
-		when(prodDao.getProduct(1)).thenReturn(new Product());
-		when(plandao.addPlan(any())).thenReturn(plan);
-		PlanDto newdto = service.addPlan(dto);
-		logger.info(newdto);
-		logger.info(plandao.addPlan(plan));
-	}
-
-	@Test
 	public void getProductIdByNonExistingPlanId() {
 		expectedEx.expect(PricingNotFoundException.class);
 		expectedEx.expectMessage("Plan not found");
@@ -235,7 +219,6 @@ public class TestPlanManagerservice {
 		expectedEx.expect(PricingNotFoundException.class);
 		expectedEx.expectMessage("There are no plans");
 		List<Plan> list = new ArrayList<Plan>();
-		plandao = Mockito.mock(PlanDao.class);
 		Mockito.when(plandao.getAllPlans()).thenReturn(list);
 		service.getAllPlans();
 	}

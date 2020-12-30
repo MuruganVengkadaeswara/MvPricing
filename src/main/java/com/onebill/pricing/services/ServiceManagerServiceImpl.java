@@ -106,7 +106,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 	}
 
 	@Override
-	public ServiceDto getService(int serviceId) throws NotFoundException {
+	public ServiceDto getService(int serviceId) {
 
 		if (serviceId > 0) {
 			Service service = servicedao.getService(serviceId);
@@ -114,7 +114,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 				logger.info("service returned" + service);
 				return mapper.map(service, ServiceDto.class);
 			} else {
-				throw new NotFoundException("The service With id " + serviceId + " is not found");
+				throw new PricingNotFoundException("The service With id " + serviceId + " is not found");
 			}
 		} else {
 			throw new PricingException("The service id must be greater than 0");

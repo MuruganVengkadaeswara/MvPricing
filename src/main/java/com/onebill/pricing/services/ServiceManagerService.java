@@ -17,7 +17,7 @@ public interface ServiceManagerService {
 
 	ServiceDto updateService(ServiceDto dto);
 
-	ServiceDto getService(int serviceId) throws NotFoundException;
+	ServiceDto getService(int serviceId);
 
 	List<ServiceDto> getAllServices();
 

@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.mockito.Mockito.*;
@@ -66,13 +66,13 @@ public class TestProductManagerService {
 
 	Logger logger = Logger.getLogger(TestProductManagerService.class);
 
-	@Autowired
+	@Mock
 	ModelMapper mapper;
-
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(this);
-	}
+	//
+	// @Before
+	// public void init() {
+	// MockitoAnnotations.initMocks(this);
+	// }
 
 	@Test
 	public void testAddProductWithNullName() {
@@ -133,10 +133,6 @@ public class TestProductManagerService {
 
 		dto.setServices(list);
 		dto.setAdditionalPrices(plist);
-
-		servDao = mock(ServiceDaoImpl.class);
-
-		Mockito.when(servDao.getService(anyInt())).thenReturn(new Service());
 
 	}
 

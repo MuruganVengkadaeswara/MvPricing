@@ -31,6 +31,11 @@
 
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 
+
+			<property name="hibernate.connection.Charset" value="utf8mb4"/>
+			<property name="hibernate.connection.CharacterEncoding" value="utf8mb4"/>
+			<property name="hibernate.connection.useUnicode" value="true"/>
+
 		</properties>
 
 	</persistence-unit>

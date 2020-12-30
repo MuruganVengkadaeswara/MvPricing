@@ -15,7 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 
 import com.onebill.pricing.dao.BundleDao;
 import com.onebill.pricing.dao.BundleDaoImpl;
@@ -57,6 +58,9 @@ public class TestBundleManagerService {
 	@Mock
 	ProductDao prodDao;
 
+	@Mock
+	ModelMapper mapper;
+	
 	@InjectMocks
 	ProductManagerService prodService = new ProductManagerServiceImpl();
 
