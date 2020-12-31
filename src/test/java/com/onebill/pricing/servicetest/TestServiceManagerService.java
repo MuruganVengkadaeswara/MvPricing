@@ -58,7 +58,6 @@ public class TestServiceManagerService {
 	@Mock
 	ModelMapper mapper;
 
-
 	@Test
 	public void testAddServiceWithNullInput() {
 		expectedEx.expect(PricingConflictsException.class);
@@ -67,39 +66,30 @@ public class TestServiceManagerService {
 		service.addService(dto);
 	}
 
-//	@Before
-//	public void setup() {
-//		MockitoAnnotations.initMocks(this);
-//	}
+	@Before
+	public void setup() {
+		servDto = new ServiceDto();
+		servDto.setServiceId(2);
+		servDto.setServiceName("dummy");
+
+		serv = new Service();
+		serv.setServiceId(2);
+		serv.setServiceName("dummy");
+	}
 
 	@Test
 	public void testGetService() throws NotFoundException {
 		Service s = new Service();
 		s.setServiceId(1);
 		s.setServiceName("dummy");
-		
+
 		ServiceDto dto = new ServiceDto();
 		dto.setServiceId(1);
 		dto.setServiceName("dummy");
-		
+
 		Mockito.when(servicedao.getService(Mockito.anyInt())).thenReturn(s);
 		Mockito.when(service.getService(1)).thenReturn(dto);
 		assertNotNull(service.getService(1));
-	}
-
-	@Test
-	public void testAddService() {
-		ServiceDto dto = new ServiceDto();
-		dto.setServiceName("dummy");
-		dto.setServiceId(1);
-
-		Service s = new Service();
-		s.setServiceId(1);
-		s.setServiceName("dummy");
-
-		Mockito.when(servicedao.addService(Mockito.any())).thenReturn(s);
-		service.addService(dto);
-//		assertNotNull(service.addService(dto));
 	}
 
 	@Test

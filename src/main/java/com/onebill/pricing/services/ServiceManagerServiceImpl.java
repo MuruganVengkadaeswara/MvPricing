@@ -42,7 +42,7 @@ public class ServiceManagerServiceImpl implements ServiceManagerService {
 				if (servicedao.getServiceByName(dto.getServiceName()) == null) {
 					if (dto.getServiceName().length() < 25 && dto.getServiceName().length() > 2) {
 						Service service = mapper.map(dto, Service.class);
-						servicedao.addService(service);
+						service = servicedao.addService(service);
 						if (service != null) {
 							logger.info("Service added" + service);
 							return mapper.map(service, ServiceDto.class);
